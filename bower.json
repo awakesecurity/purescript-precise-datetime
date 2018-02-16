@@ -1,5 +1,6 @@
 {
   "name": "purescript-precise-datetime",
+  "license": "Apache-2.0",
   "ignore": [
     "**/.*",
     "node_modules",
