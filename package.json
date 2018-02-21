@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "big-integer": "^1.6.26"
+  }
+}

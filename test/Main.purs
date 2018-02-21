@@ -2,8 +2,10 @@ module Test.Main where
 
 import Prelude
 import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, log)
+import Node.FS (FS)
+import Test.Spec.Discovery (discover)
+import Test.Spec.Reporter.Console (consoleReporter)
+import Test.Spec.Runner (RunnerEffects, run)
 
-main :: forall e. Eff (console :: CONSOLE | e) Unit
-main = do
-  log "You should add some tests."
+main :: Eff (RunnerEffects (fs :: FS)) Unit
+main = discover "Test\\..*\\.Spec" >>= run [consoleReporter]
