@@ -1,5 +1,7 @@
 # purescript-precise-datetime
 
+[![Build Status](https://travis-ci.org/awakesecurity/purescript-precise-datetime.svg?branch=master)](https://travis-ci.org/awakesecurity/purescript-precise-datetime)
+
 Dates with nanosecond precision.
 
 
