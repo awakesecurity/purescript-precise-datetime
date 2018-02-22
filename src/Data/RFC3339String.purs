@@ -2,17 +2,19 @@ module Data.RFC3339String where
 
 import Prelude
 
-import Control.Monad.Eff (Eff, runPure)
+import Control.Monad.Eff (runPure)
 import Control.Monad.Eff.Unsafe (unsafeCoerceEff)
-import Data.DateTime (DateTime)
+import Data.DateTime (DateTime(..))
+import Data.DateTime.Locale (LocalDateTime, LocalValue(..), Locale(..))
 import Data.Foldable (foldr)
 import Data.Formatter.DateTime (format)
-import Data.JSDate (JSDate, LOCALE)
+import Data.JSDate (getHours, getMinutes, getUTCHours, getUTCMinutes)
 import Data.JSDate as JSDate
-import Data.Maybe (Maybe)
+import Data.Maybe (Maybe(..))
 import Data.Newtype (class Newtype, unwrap)
-import Data.RFC3339String.Format (iso8601Format)
+import Data.RFC3339String.Format (formatLocale, iso8601Format)
 import Data.String as String
+import Data.Time.Duration (Hours(..), Minutes(..), convertDuration)
 import Data.Tuple (Tuple(..), snd)
 
 newtype RFC3339String = RFC3339String String
@@ -25,32 +27,45 @@ instance showRFC3339String :: Show RFC3339String where
   show (RFC3339String s) = "(RFC3339String " <> show s <> ")"
 
 -- | Remove trailing zeros from the subsecond component.
-trim :: RFC3339String -> RFC3339String
-trim (RFC3339String s) =
+trim :: String -> String
+trim s =
   let
     withoutZulu = dropWhileEnd (eq 'Z') s
     withoutTrailingZeros = dropWhileEnd (eq '0') withoutZulu
     withoutTrailingDot = dropWhileEnd (eq '.') withoutTrailingZeros
   in
-    RFC3339String $ withoutTrailingDot <> "Z"
+    withoutTrailingDot
 
 -- | Use our own formatter since we'd otherwise need to convert from `DateTime`
 -- | to `JSDate` first, and `Data.JSDate.toISOString` can throw exceptions.
-fromDateTime :: DateTime -> RFC3339String
-fromDateTime = trim <<< RFC3339String <<< format iso8601Format
-
-toDateTime :: RFC3339String -> Maybe DateTime
-toDateTime = JSDate.toDateTime <<< unsafeParse <<< unwrap
+fromLocalDateTime :: LocalDateTime -> RFC3339String
+fromLocalDateTime = RFC3339String <<< fmt
   where
-  coerceJSDate :: Eff (locale :: LOCALE) JSDate -> Eff () JSDate
-  coerceJSDate = unsafeCoerceEff
+    fmt (LocalValue locale dt) = trim (format iso8601Format dt)
+                              <> formatLocale locale
 
+fromDateTime :: DateTime -> RFC3339String
+fromDateTime = fromLocalDateTime <<< LocalValue (Locale Nothing zero)
+
+toLocalDateTime :: RFC3339String -> Maybe LocalDateTime
+toLocalDateTime = unsafeParse <<< unwrap
+  where
   -- | Parse a `String` that is known to specify a time zone.
   -- |
   -- | See https://github.com/purescript-contrib/purescript-js-date/issues/15
   -- | for why this is "unsafe".
-  unsafeParse :: String -> JSDate
-  unsafeParse = runPure <<< coerceJSDate <<< JSDate.parse
+  unsafeParse :: String -> Maybe LocalDateTime
+  unsafeParse = runPure <<< unsafeCoerceEff <<< parseLocalDateTime
+
+  parseLocalDateTime s = do
+    jsDate <- JSDate.parse s
+    locale <- getLocale jsDate
+    pure $ LocalValue locale <$> JSDate.toDateTime jsDate
+
+  getLocale dt = do
+    hours <- (-) <$> getHours dt <*> pure (getUTCHours dt)
+    minutes <- (-) <$> getMinutes dt <*> pure (getUTCMinutes dt)
+    pure $ Locale Nothing (convertDuration (Hours hours) + Minutes minutes)
 
 -- | Returns the prefix remaining after dropping characters that satisfy the
 -- | predicate from the end of the string.

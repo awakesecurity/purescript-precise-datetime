@@ -4,6 +4,7 @@ import Prelude
 
 import Data.BigInt (fromInt, fromString)
 import Data.Date as Date
+import Data.DateTime.Locale (LocalValue(..), Locale(..))
 import Data.Enum (toEnum)
 import Data.Maybe (Maybe(..), fromJust)
 import Data.Newtype (class Newtype)
@@ -18,8 +19,10 @@ import Test.Utils (mkDateTime)
 mkPreciseDateTime :: Int -> Date.Month -> Int -> Int -> Int -> Int -> Int -> Int -> PreciseDateTime
 mkPreciseDateTime yyyy month dd hh mm ss ms ns =
   PreciseDateTime
-    (mkDateTime yyyy month dd hh mm ss ms)
+    localDT
     (unsafePartial fromJust $ toEnum ns)
+  where
+    localDT = LocalValue (Locale Nothing zero) (mkDateTime yyyy month dd hh mm ss ms)
 
 preciseDateTimeFixture :: Int -> Int -> PreciseDateTime
 preciseDateTimeFixture = mkPreciseDateTime 1985 Date.March 13 12 34 56
@@ -233,3 +236,13 @@ spec =
 
       adjust (Nanoseconds <<< unsafePartial fromJust <<< fromString $ "-300000000000") (mkPreciseDateTime 2017 Date.September 17 0 0 0 123 123456789)
         `shouldEqual` (Just $ mkPreciseDateTime 2017 Date.September 16 23 55 0 123 123456789)
+
+    it "locale" do
+      -- NB: The "+/- time" specifies that the timezone the date is in.
+      -- The datetime object will be normalized to GMT, so "x+0800" in GMT is x
+      -- but 8 hours behind.
+      fromRFC3339String (RFC3339String $ dateStringFixture <> "+08:00")
+        `shouldEqual` (adjust (Hours (fromInt (-8))) (preciseDateTimeFixture 0 0))
+
+      fromRFC3339String (RFC3339String $ dateStringFixture <> "-08:00")
+        `shouldEqual` (adjust (Hours (fromInt 8)) (preciseDateTimeFixture 0 0))
