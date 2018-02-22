@@ -4,7 +4,7 @@ import Prelude
 
 import Control.Monad.Eff (runPure)
 import Control.Monad.Eff.Unsafe (unsafeCoerceEff)
-import Data.DateTime (DateTime(..))
+import Data.DateTime (DateTime)
 import Data.DateTime.Locale (LocalDateTime, LocalValue(..), Locale(..))
 import Data.Foldable (foldr)
 import Data.Formatter.DateTime (format)
