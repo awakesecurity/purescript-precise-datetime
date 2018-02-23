@@ -2,7 +2,7 @@ module Data.Time.PreciseDuration where
 
 import Prelude
 
-import Data.BigInt (BigInt, fromInt)
+import Data.BigInt (BigInt, fromInt, toNumber)
 
 data PreciseDuration
   = Nanoseconds BigInt
@@ -26,6 +26,19 @@ instance showPreciseDuration :: Show PreciseDuration where
   show (Hours d) = "(Hours " <> show d <> ")"
   show (Days d) = "(Days " <> show d <> ")"
   show (Weeks d) = "(Weeks " <> show d <> ")"
+
+toString :: PreciseDuration -> String
+toString =
+  let s = show <<< toNumber
+  in case _ of
+    Nanoseconds d -> s d  <> "ns"
+    Microseconds d ->  s d  <> "us"
+    Milliseconds d ->  s d  <> "ms"
+    Seconds d ->  s d  <> "s"
+    Minutes d ->  s d  <> "m"
+    Hours d ->  s d  <> "h"
+    Days d ->  s d  <> "d"
+    Weeks d ->  s d  <> "w"
 
 unPreciseDuration :: PreciseDuration -> BigInt
 unPreciseDuration = case _ of
