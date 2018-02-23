@@ -72,11 +72,15 @@ parseSubseconds (RFC3339String s) = do
 nanosecond :: RFC3339String -> Maybe Nanosecond
 nanosecond rfcString = parseSubseconds rfcString <|> Just 0 >>= toEnum
 
+fromRFC3339String' :: (RFC3339String -> Maybe LocalDateTime)
+                   -> RFC3339String -> Maybe PreciseDateTime
+fromRFC3339String' f s = do
+  ldt <- f s
+  ns  <- nanosecond s
+  pure $ PreciseDateTime ldt ns
+
 fromRFC3339String :: RFC3339String -> Maybe PreciseDateTime
-fromRFC3339String rfcString = do
-  dateTime <- RFC3339String.toLocalDateTime rfcString
-  ns <- nanosecond rfcString
-  pure $ PreciseDateTime dateTime ns
+fromRFC3339String = fromRFC3339String' (map (map (LocalValue (Locale Nothing zero))) RFC3339String.toDateTime)
 
 toRFC3339String :: PreciseDateTime -> RFC3339String
 toRFC3339String (PreciseDateTime (LocalValue locale dateTime) ns) =

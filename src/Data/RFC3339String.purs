@@ -2,13 +2,13 @@ module Data.RFC3339String where
 
 import Prelude
 
-import Control.Monad.Eff (runPure)
+import Control.Monad.Eff (Eff, runPure)
 import Control.Monad.Eff.Unsafe (unsafeCoerceEff)
 import Data.DateTime (DateTime)
 import Data.DateTime.Locale (LocalDateTime, LocalValue(..), Locale(..))
 import Data.Foldable (foldr)
 import Data.Formatter.DateTime (format)
-import Data.JSDate (getHours, getMinutes, getUTCHours, getUTCMinutes)
+import Data.JSDate (JSDate, LOCALE, getHours, getMinutes, getUTCHours, getUTCMinutes)
 import Data.JSDate as JSDate
 import Data.Maybe (Maybe(..))
 import Data.Newtype (class Newtype, unwrap)
@@ -47,25 +47,18 @@ fromLocalDateTime = RFC3339String <<< fmt
 fromDateTime :: DateTime -> RFC3339String
 fromDateTime = fromLocalDateTime <<< LocalValue (Locale Nothing zero)
 
-toLocalDateTime :: RFC3339String -> Maybe LocalDateTime
-toLocalDateTime = unsafeParse <<< unwrap
+toDateTime :: RFC3339String -> Maybe DateTime
+toDateTime = JSDate.toDateTime <<< unsafeParse <<< unwrap
   where
+  coerceJSDate :: Eff (locale :: LOCALE) JSDate -> Eff () JSDate
+  coerceJSDate = unsafeCoerceEff
+
   -- | Parse a `String` that is known to specify a time zone.
   -- |
   -- | See https://github.com/purescript-contrib/purescript-js-date/issues/15
   -- | for why this is "unsafe".
-  unsafeParse :: String -> Maybe LocalDateTime
-  unsafeParse = runPure <<< unsafeCoerceEff <<< parseLocalDateTime
-
-  parseLocalDateTime s = do
-    jsDate <- JSDate.parse s
-    locale <- getLocale jsDate
-    pure $ LocalValue locale <$> JSDate.toDateTime jsDate
-
-  getLocale dt = do
-    hours <- (-) <$> getHours dt <*> pure (getUTCHours dt)
-    minutes <- (-) <$> getMinutes dt <*> pure (getUTCMinutes dt)
-    pure $ Locale Nothing (convertDuration (Hours hours) + Minutes minutes)
+  unsafeParse :: String -> JSDate
+  unsafeParse = runPure <<< coerceJSDate <<< JSDate.parse
 
 -- | Returns the prefix remaining after dropping characters that satisfy the
 -- | predicate from the end of the string.

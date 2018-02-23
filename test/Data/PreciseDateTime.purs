@@ -238,6 +238,9 @@ spec =
         `shouldEqual` (Just $ mkPreciseDateTime 2017 Date.September 16 23 55 0 123 123456789)
 
     it "locale" do
+      -- NB: these tests do not ensure that the locale is actually correct
+      -- because the fromRFC3339String function always sets it as 0.
+
       -- NB: The "+/- time" specifies that the timezone the date is in.
       -- The datetime object will be normalized to GMT, so "x+0800" in GMT is x
       -- but 8 hours behind.
