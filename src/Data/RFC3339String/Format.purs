@@ -23,7 +23,7 @@ iso8601Format = dateTimeFormatISO <> fromFoldable
 formatLocale :: Locale -> String
 formatLocale (Locale _ (Minutes mins))
   | mins == zero = "Z"
-  | otherwise = s <> padShow (m `div` 60) <> padShow (m `mod` 60)
+  | otherwise = s <> padShow (m `div` 60) <>":" <> padShow (m `mod` 60)
   where
     padShow n = takeRight 2 $ "00" <> show n
     s | mins >= zero = "+"
