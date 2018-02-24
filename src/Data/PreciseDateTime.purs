@@ -25,20 +25,22 @@ import Data.Maybe (Maybe(..))
 import Data.Newtype (unwrap)
 import Data.PreciseDate.Component (Nanosecond)
 import Data.PreciseDateTime.Internal (dateTimeFormatISO)
+import Data.Profunctor.Strong ((&&&))
 import Data.RFC3339String (RFC3339String(..))
 import Data.RFC3339String as RFC3339String
 import Data.RFC3339String.Format (formatLocale)
 import Data.String (Pattern(Pattern), drop, length, split, takeWhile)
 import Data.Time.Duration as Duration
 import Data.Time.PreciseDuration (PreciseDuration, toMilliseconds, toNanoseconds, unPreciseDuration)
-import Data.Traversable (traverse)
+import Data.Traversable (sequence, traverse)
+import Data.Tuple (uncurry)
 
 data PreciseDateTime = PreciseDateTime LocalDateTime Nanosecond
 
 derive instance eqPreciseDateTime :: Eq PreciseDateTime
 derive instance ordPreciseDateTime :: Ord PreciseDateTime
 
-instance boundedPreciseDateTIme :: Bounded PreciseDateTime where
+instance boundedPreciseDateTime :: Bounded PreciseDateTime where
   bottom = PreciseDateTime (LocalValue (Locale Nothing zero) bottom) bottom
   top = PreciseDateTime (LocalValue (Locale Nothing zero) top) top
 
@@ -80,7 +82,10 @@ fromRFC3339String' f s = do
   pure $ PreciseDateTime ldt ns
 
 fromRFC3339String :: RFC3339String -> Maybe PreciseDateTime
-fromRFC3339String = fromRFC3339String' (map (map (LocalValue (Locale Nothing zero))) RFC3339String.toDateTime)
+fromRFC3339String = fromRFC3339String' $
+                      map (uncurry LocalValue)
+                      <<< sequence
+                      <<< (RFC3339String.toLocale &&& RFC3339String.toDateTime)
 
 toRFC3339String :: PreciseDateTime -> RFC3339String
 toRFC3339String (PreciseDateTime (LocalValue locale dateTime) ns) =
