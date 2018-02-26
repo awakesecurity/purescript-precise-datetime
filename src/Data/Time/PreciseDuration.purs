@@ -31,14 +31,14 @@ toString :: PreciseDuration -> String
 toString =
   let s = show <<< toNumber
   in case _ of
-    Nanoseconds d -> s d  <> "ns"
-    Microseconds d ->  s d  <> "us"
-    Milliseconds d ->  s d  <> "ms"
-    Seconds d ->  s d  <> "s"
-    Minutes d ->  s d  <> "m"
-    Hours d ->  s d  <> "h"
-    Days d ->  s d  <> "d"
-    Weeks d ->  s d  <> "w"
+    Nanoseconds d -> s d <> "ns"
+    Microseconds d -> s d <> "us"
+    Milliseconds d -> s d <> "ms"
+    Seconds d -> s d <> "s"
+    Minutes d -> s d <> "m"
+    Hours d -> s d <> "h"
+    Days d -> s d <> "d"
+    Weeks d -> s d <> "w"
 
 unPreciseDuration :: PreciseDuration -> BigInt
 unPreciseDuration = case _ of

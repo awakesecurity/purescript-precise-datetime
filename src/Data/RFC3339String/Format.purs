@@ -19,7 +19,7 @@ iso8601Format = dateTimeFormatISO <> fromFoldable
   ]
 
 -- Assumes the locale is valid, i.e. the offset is between
--- [-720, +720] minutes.
+-- [-1440, +1440] minutes.
 formatLocale :: Locale -> String
 formatLocale (Locale _ (Minutes mins))
   | mins == zero = "Z"
