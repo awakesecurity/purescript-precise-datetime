@@ -72,7 +72,7 @@ nanosecond rfcString = parseSubseconds rfcString <|> Just 0 >>= toEnum
 fromRFC3339String :: RFC3339String -> Maybe PreciseDateTime
 fromRFC3339String rfcString = do
   dateTime <- RFC3339String.toDateTime rfcString
-  ns  <- nanosecond rfcString
+  ns <- nanosecond rfcString
   pure $ PreciseDateTime dateTime ns
 
 toRFC3339String :: PreciseDateTime -> RFC3339String
@@ -82,7 +82,7 @@ toRFC3339String (PreciseDateTime dateTime ns) =
     nanos = Int.toStringAs decimal (unwrap ns)
     leftPadded = leftPadNanoString nanos
   in
-     trim <<< RFC3339String $ beforeDot <> "." <> leftPadded <> "Z"
+    trim <<< RFC3339String $ beforeDot <> "." <> leftPadded <> "Z"
 
 -- | Adjusts a date/time value with a duration offset. `Nothing` is returned
 -- | if the resulting date would be outside of the range of valid dates.
