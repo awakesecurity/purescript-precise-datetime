@@ -2,7 +2,8 @@ module Data.Time.PreciseDuration where
 
 import Prelude
 
-import Data.BigInt (BigInt, fromInt, toNumber)
+import Data.BigInt (BigInt)
+import Data.BigInt as BigInt
 
 data PreciseDuration
   = Nanoseconds BigInt
@@ -29,16 +30,15 @@ instance showPreciseDuration :: Show PreciseDuration where
 
 toString :: PreciseDuration -> String
 toString =
-  let s = show <<< toNumber
-  in case _ of
-    Nanoseconds d -> s d <> "ns"
-    Microseconds d -> s d <> "us"
-    Milliseconds d -> s d <> "ms"
-    Seconds d -> s d <> "s"
-    Minutes d -> s d <> "m"
-    Hours d -> s d <> "h"
-    Days d -> s d <> "d"
-    Weeks d -> s d <> "w"
+  case _ of
+    Nanoseconds d -> BigInt.toString d <> "ns"
+    Microseconds d -> BigInt.toString d <> "us"
+    Milliseconds d -> BigInt.toString d <> "ms"
+    Seconds d -> BigInt.toString d <> "s"
+    Minutes d -> BigInt.toString d <> "m"
+    Hours d -> BigInt.toString d <> "h"
+    Days d -> BigInt.toString d <> "d"
+    Weeks d -> BigInt.toString d <> "w"
 
 unPreciseDuration :: PreciseDuration -> BigInt
 unPreciseDuration = case _ of
@@ -52,14 +52,14 @@ unPreciseDuration = case _ of
   Weeks d -> d
 
 -- Each duration in nanoseconds
-nano = fromInt 1 :: BigInt
-micro = (nano * fromInt 1000) :: BigInt
-milli = (micro * fromInt 1000) :: BigInt
-second = (milli * fromInt 1000) :: BigInt
-minute = (second * fromInt 60) :: BigInt
-hour = (minute * fromInt 60) :: BigInt
-day = (hour * fromInt 24) :: BigInt
-week = (day * fromInt 7) :: BigInt
+nano = BigInt.fromInt 1 :: BigInt
+micro = (nano * BigInt.fromInt 1000) :: BigInt
+milli = (micro * BigInt.fromInt 1000) :: BigInt
+second = (milli * BigInt.fromInt 1000) :: BigInt
+minute = (second * BigInt.fromInt 60) :: BigInt
+hour = (minute * BigInt.fromInt 60) :: BigInt
+day = (hour * BigInt.fromInt 24) :: BigInt
+week = (day * BigInt.fromInt 7) :: BigInt
 
 toNanoseconds' :: PreciseDuration -> BigInt
 toNanoseconds' duration = case duration of
