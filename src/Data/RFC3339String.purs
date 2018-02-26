@@ -34,25 +34,19 @@ instance showRFC3339String :: Show RFC3339String where
   show (RFC3339String s) = "(RFC3339String " <> show s <> ")"
 
 -- | Remove trailing zeros from the subsecond component.
-trim :: String -> String
-trim s =
+trim :: RFC3339String -> RFC3339String
+trim (RFC3339String s) =
   let
     withoutZulu = dropWhileEnd (eq 'Z') s
     withoutTrailingZeros = dropWhileEnd (eq '0') withoutZulu
     withoutTrailingDot = dropWhileEnd (eq '.') withoutTrailingZeros
   in
-    withoutTrailingDot
+    RFC3339String $ withoutTrailingDot <> "Z"
 
 -- | Use our own formatter since we'd otherwise need to convert from `DateTime`
 -- | to `JSDate` first, and `Data.JSDate.toISOString` can throw exceptions.
-fromLocalDateTime :: LocalDateTime -> RFC3339String
-fromLocalDateTime = RFC3339String <<< fmt
-  where
-    fmt (LocalValue locale dt) = trim (format iso8601Format dt)
-                              <> formatLocale locale
-
 fromDateTime :: DateTime -> RFC3339String
-fromDateTime = fromLocalDateTime <<< LocalValue (Locale Nothing zero)
+fromDateTime = trim <<< RFC3339String <<< format iso8601Format
 
 -- | Reads the locale, returning GMT (+0000) if not present.
 toLocale :: RFC3339String -> Locale

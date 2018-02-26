@@ -16,7 +16,6 @@ import Data.BigInt as BigInt
 import Data.Char.Unicode (isDigit)
 import Data.DateTime (DateTime)
 import Data.DateTime as DateTime
-import Data.DateTime.Locale (LocalValue(..), Locale(..), LocalDateTime)
 import Data.Enum (toEnum)
 import Data.Formatter.DateTime (format)
 import Data.Int (decimal)
@@ -25,24 +24,20 @@ import Data.Maybe (Maybe(..))
 import Data.Newtype (unwrap)
 import Data.PreciseDate.Component (Nanosecond)
 import Data.PreciseDateTime.Internal (dateTimeFormatISO)
-import Data.Profunctor.Strong ((&&&))
-import Data.RFC3339String (RFC3339String(..))
+import Data.RFC3339String (RFC3339String(..), trim)
 import Data.RFC3339String as RFC3339String
-import Data.RFC3339String.Format (formatLocale)
 import Data.String (Pattern(Pattern), drop, length, split, takeWhile)
 import Data.Time.Duration as Duration
 import Data.Time.PreciseDuration (PreciseDuration, toMilliseconds, toNanoseconds, unPreciseDuration)
-import Data.Traversable (sequence, traverse)
-import Data.Tuple (uncurry)
 
-data PreciseDateTime = PreciseDateTime LocalDateTime Nanosecond
+data PreciseDateTime = PreciseDateTime DateTime Nanosecond
 
 derive instance eqPreciseDateTime :: Eq PreciseDateTime
 derive instance ordPreciseDateTime :: Ord PreciseDateTime
 
 instance boundedPreciseDateTime :: Bounded PreciseDateTime where
-  bottom = PreciseDateTime (LocalValue (Locale Nothing zero) bottom) bottom
-  top = PreciseDateTime (LocalValue (Locale Nothing zero) top) top
+  bottom = PreciseDateTime bottom bottom
+  top = PreciseDateTime top top
 
 instance showPreciseDateTime :: Show PreciseDateTime where
   show (PreciseDateTime dateTime ns) = "PreciseDateTime (" <> show dateTime <> ") " <> show ns
@@ -74,28 +69,20 @@ parseSubseconds (RFC3339String s) = do
 nanosecond :: RFC3339String -> Maybe Nanosecond
 nanosecond rfcString = parseSubseconds rfcString <|> Just 0 >>= toEnum
 
-fromRFC3339String' :: (RFC3339String -> Maybe LocalDateTime)
-                   -> RFC3339String -> Maybe PreciseDateTime
-fromRFC3339String' f s = do
-  ldt <- f s
-  ns  <- nanosecond s
-  pure $ PreciseDateTime ldt ns
-
 fromRFC3339String :: RFC3339String -> Maybe PreciseDateTime
-fromRFC3339String = fromRFC3339String' $
-                      map (uncurry LocalValue)
-                      <<< sequence
-                      <<< (RFC3339String.toLocale &&& RFC3339String.toDateTime)
+fromRFC3339String rfcString = do
+  dateTime <- RFC3339String.toDateTime rfcString
+  ns  <- nanosecond rfcString
+  pure $ PreciseDateTime dateTime ns
 
 toRFC3339String :: PreciseDateTime -> RFC3339String
-toRFC3339String (PreciseDateTime (LocalValue locale dateTime) ns) =
+toRFC3339String (PreciseDateTime dateTime ns) =
   let
     beforeDot = format dateTimeFormatISO dateTime
     nanos = Int.toStringAs decimal (unwrap ns)
     leftPadded = leftPadNanoString nanos
-    formattedDateTime = RFC3339String.trim (beforeDot <> "." <> leftPadded)
   in
-    RFC3339String $ formattedDateTime <> formatLocale locale
+     trim <<< RFC3339String $ beforeDot <> "." <> leftPadded <> "Z"
 
 -- | Adjusts a date/time value with a duration offset. `Nothing` is returned
 -- | if the resulting date would be outside of the range of valid dates.
@@ -126,7 +113,7 @@ adjust pd (PreciseDateTime dt ns) = do
     msDur :: Duration.Milliseconds
     msDur = Duration.Milliseconds <<< BigInt.toNumber $ adjustedMsPrecDurInt
 
-  adjustedDateTime <- traverse (DateTime.adjust msDur) dt
+  adjustedDateTime <- DateTime.adjust msDur dt
 
   -- If the duration is larger than can be represented in a `Nanosecond`
   -- component, take the last 9 digits.
@@ -165,14 +152,8 @@ adjust pd (PreciseDateTime dt ns) = do
     toInt :: BigInt -> Maybe Int
     toInt = Int.fromString <<< BigInt.toString
 
-toLocalDateTimeLossy :: PreciseDateTime -> LocalDateTime
-toLocalDateTimeLossy (PreciseDateTime ldt _) = ldt
-
-fromLocalDateTime :: LocalDateTime -> PreciseDateTime
-fromLocalDateTime ldt = PreciseDateTime ldt bottom
-
 toDateTimeLossy :: PreciseDateTime -> DateTime
-toDateTimeLossy (PreciseDateTime (LocalValue _ dt) _) = dt
+toDateTimeLossy (PreciseDateTime dt _) = dt
 
 fromDateTime :: DateTime -> PreciseDateTime
-fromDateTime dt = PreciseDateTime (LocalValue (Locale Nothing zero) dt) bottom
+fromDateTime dt = PreciseDateTime dt bottom
