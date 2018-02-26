@@ -56,8 +56,8 @@ toLocale (RFC3339String s) = Locale Nothing $ fromMaybe zero $ unsafePartial $ d
   let readNum = map toNumber <<< fromString
   hrs' <- readNum hrs
   mins' <- readNum mins
-  let offset  = convertDuration (Hours hrs') + Minutes mins'
-  pure $ (if sign=="-" then negate else id) offset
+  let offset = convertDuration (Hours hrs') + Minutes mins'
+  pure $ (if sign == "-" then negate else id) offset
 
 toDateTime :: RFC3339String -> Maybe DateTime
 toDateTime = JSDate.toDateTime <<< unsafeParse <<< unwrap
