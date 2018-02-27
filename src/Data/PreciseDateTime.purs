@@ -35,7 +35,7 @@ data PreciseDateTime = PreciseDateTime DateTime Nanosecond
 derive instance eqPreciseDateTime :: Eq PreciseDateTime
 derive instance ordPreciseDateTime :: Ord PreciseDateTime
 
-instance boundedPreciseDateTIme :: Bounded PreciseDateTime where
+instance boundedPreciseDateTime :: Bounded PreciseDateTime where
   bottom = PreciseDateTime bottom bottom
   top = PreciseDateTime top top
 

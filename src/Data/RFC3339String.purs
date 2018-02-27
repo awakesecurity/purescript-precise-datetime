@@ -4,16 +4,25 @@ import Prelude
 
 import Control.Monad.Eff (Eff, runPure)
 import Control.Monad.Eff.Unsafe (unsafeCoerceEff)
+import Data.BigInt (fromInt)
 import Data.DateTime (DateTime)
+import Data.DateTime.Locale (LocalDateTime, LocalValue(..), Locale(..))
+import Data.Either (hush)
 import Data.Foldable (foldr)
 import Data.Formatter.DateTime (format)
-import Data.JSDate (JSDate, LOCALE)
+import Data.Int (fromString, toNumber)
+import Data.JSDate (JSDate, LOCALE, getHours, getMinutes, getUTCHours, getUTCMinutes)
 import Data.JSDate as JSDate
-import Data.Maybe (Maybe)
+import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Newtype (class Newtype, unwrap)
-import Data.RFC3339String.Format (iso8601Format)
+import Data.RFC3339String.Format (formatLocale, iso8601Format)
 import Data.String as String
+import Data.String.Regex as RE
+import Data.String.Regex.Flags (noFlags) as RE
+import Data.Time.Duration (Hours(..), Minutes(..), convertDuration)
+import Data.Traversable (sequence)
 import Data.Tuple (Tuple(..), snd)
+import Partial.Unsafe (unsafePartial)
 
 newtype RFC3339String = RFC3339String String
 
@@ -38,6 +47,17 @@ trim (RFC3339String s) =
 -- | to `JSDate` first, and `Data.JSDate.toISOString` can throw exceptions.
 fromDateTime :: DateTime -> RFC3339String
 fromDateTime = trim <<< RFC3339String <<< format iso8601Format
+
+-- | Reads the locale, returning GMT (+0000) if not present.
+toLocale :: RFC3339String -> Locale
+toLocale (RFC3339String s) = Locale Nothing $ fromMaybe zero $ unsafePartial $ do
+  re <- hush $ RE.regex "([-|\\+])(\\d\\d):?(\\d\\d)$" RE.noFlags
+  [_, sign, hrs, mins] <- sequence =<< RE.match re s
+  let readNum = map toNumber <<< fromString
+  hrs' <- readNum hrs
+  mins' <- readNum mins
+  let offset = convertDuration (Hours hrs') + Minutes mins'
+  pure $ (if sign == "-" then negate else id) offset
 
 toDateTime :: RFC3339String -> Maybe DateTime
 toDateTime = JSDate.toDateTime <<< unsafeParse <<< unwrap
