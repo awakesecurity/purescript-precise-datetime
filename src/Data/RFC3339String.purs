@@ -41,10 +41,10 @@ trim (RFC3339String s) =
     withoutTrailingZeros = dropWhileEnd (eq '0') withoutZulu
     withoutTrailingDot = dropWhileEnd (eq '.') withoutTrailingZeros
   in
-    if withoutTrailingZeros == withoutTrailingZeros
-    then RFC3339String $ withoutTrailingZeros <> "Z"
+    if withoutTrailingZeros == withoutTrailingDot
+    then RFC3339String $ withoutTrailingDot <> "Z"
          -- always have a subseconds component
-    else RFC3339String $ withoutTrailingZeros <> ".0Z"
+    else RFC3339String $ withoutTrailingDot <> ".0Z"
 
 -- | Use our own formatter since we'd otherwise need to convert from `DateTime`
 -- | to `JSDate` first, and `Data.JSDate.toISOString` can throw exceptions.

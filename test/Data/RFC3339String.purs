@@ -13,7 +13,7 @@ spec =
   describe "RFC3339String" do
     it "fromDateTime" do
       fromDateTime (mkDateTime 1985 Date.March 13 12 34 56 0)
-        `shouldEqual` (RFC3339String "1985-03-13T12:34:56Z")
+        `shouldEqual` (RFC3339String "1985-03-13T12:34:56.0Z")
 
       fromDateTime (mkDateTime 1985 Date.March 13 12 34 56 1)
         `shouldEqual` (RFC3339String "1985-03-13T12:34:56.001Z")

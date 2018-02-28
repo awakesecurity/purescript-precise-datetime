@@ -2,7 +2,7 @@ module Test.Data.PreciseDateTime.Locale.Spec where
 
 import Prelude
 
-import Data.BigInt (fromInt)
+import Data.Decimal (fromInt)
 import Data.DateTime.Locale (LocalValue(..), Locale(..))
 import Data.Int (toNumber)
 import Data.Maybe (Maybe(..))
@@ -46,7 +46,7 @@ spec =
 
     it "toRFC3339String" do
       toRFC3339String (LocalValue (Locale Nothing zero) (preciseDateTimeFixture 0 0))
-        `shouldEqual` RFC3339String (dateStringFixture <>"Z")
+        `shouldEqual` RFC3339String (dateStringFixture <>".0Z")
 
       toRFC3339String (LocalValue (Locale Nothing (Dur.convertDuration (Dur.Hours 4.0))) (preciseDateTimeFixture 0 0))
-        `shouldEqual` RFC3339String (dateStringFixture <>"+04:00")
+        `shouldEqual` RFC3339String (dateStringFixture <>".0+04:00")

@@ -7,14 +7,16 @@ module Data.PreciseDateTime
   , fromDateTime
   ) where
 
+import Debug.Trace
 import Prelude
 
 import Control.Alt ((<|>))
 import Data.Array ((!!))
-import Data.Decimal as Decimal
 import Data.Char.Unicode (isDigit)
 import Data.DateTime (DateTime)
 import Data.DateTime as DateTime
+import Data.Decimal (Decimal, pow)
+import Data.Decimal as Decimal
 import Data.Enum (toEnum)
 import Data.Formatter.DateTime (format)
 import Data.Int (decimal)
@@ -110,7 +112,8 @@ adjust pd (PreciseDateTime dt ns) = do
     adjustedMsPrecDurInt = msPrecDurInt - Decimal.fromInt adjustment
 
     msDur :: Duration.Milliseconds
-    msDur = Duration.Milliseconds <<< Decimal.toNumber $ adjustedMsPrecDurInt
+    msDur = traceShow x (\_ -> x)
+      where x = Duration.Milliseconds <<< Decimal.toNumber $ adjustedMsPrecDurInt
 
   adjustedDateTime <- DateTime.adjust msDur dt
 
