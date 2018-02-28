@@ -7,7 +7,6 @@ module Data.PreciseDateTime
   , fromDateTime
   ) where
 
-import Debug.Trace
 import Prelude
 
 import Control.Alt ((<|>))
