@@ -1,18 +1,4 @@
-module Data.Time.PreciseDuration
-  ( PreciseDuration(..)
-  , unPreciseDuration
-  , toString
-  , toNanoseconds
-  , toMicroseconds
-  , toMilliseconds
-  , toSeconds
-  , toMinutes
-  , toHours
-  , toDays
-  , toWeeks
-  -- constants for testing
-  , nano, micro, milli, second, minute, hour, day, week
-  ) where
+module Data.Time.PreciseDuration where
 
 import Prelude
 

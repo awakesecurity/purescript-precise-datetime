@@ -1,13 +1,15 @@
 module Test.Data.Time.PreciseDuration.Spec where
 
+import Data.Time.PreciseDuration
 import Prelude
 
 import Control.Monad.Aff (Aff)
---import Data.BigInt (BigInt, fromString)
+import Data.BigInt as BigInt
 import Data.Decimal (Decimal)
 import Data.Decimal as Decimal
+import Data.Decimal.Extras (isInteger)
 import Data.Maybe (fromJust)
-import Data.Time.PreciseDuration (PreciseDuration(..), day, hour, micro, milli, minute, nano, second, toDays, toHours, toMicroseconds, toMilliseconds, toMinutes, toNanoseconds, toSeconds, toWeeks, week)
+import Data.Traversable (for_)
 import Partial.Unsafe (unsafePartial)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
@@ -20,10 +22,12 @@ test
    . (PreciseDuration -> PreciseDuration)
   -> (Decimal -> PreciseDuration)
   -> Decimal
-  -> Decimal
+  -> Array Decimal
   -> Aff r Unit
-test fn ctr div input = do
---  fn (Nanoseconds input) `shouldEqual` (ctr $ input * nano / div)
+test fn ctr div inputs = for_ inputs \input -> do
+  -- do not feed fractional values into nanoseconds
+  when (isInteger input) $
+    fn (Nanoseconds $ decimalToBigInt input) `shouldEqual` (ctr $ input * nano / div)
   fn (Microseconds input) `shouldEqual` (ctr $ input * micro / div)
   fn (Milliseconds input) `shouldEqual` (ctr $ input * milli / div)
   fn (Seconds input) `shouldEqual` (ctr $ input * second / div)
@@ -34,13 +38,13 @@ test fn ctr div input = do
 spec :: forall r. Spec r Unit
 spec =
   describe "PreciseDuration" do
-    let input = unsafeFromString "123456789"
+    let inputs = [ unsafeFromString "123456789", unsafeFromString "0.5" ]
 
---    it "toNanoseconds" $ test toNanoseconds Nanoseconds nano input
-    it "toMicroseconds" $ test toMicroseconds Microseconds micro input
-    it "toMilliseconds" $ test toMilliseconds Milliseconds milli input
-    it "toSeconds" $ test toSeconds Seconds second input
-    it "toMinutes" $ test toMinutes Minutes minute input
-    it "toHours" $ test toHours Hours hour input
-    it "toDays" $ test toDays Days day input
-    it "toWeeks" $ test toWeeks Weeks week input
+    it "toNanoseconds" $ test toNanoseconds (Nanoseconds <<< decimalToBigInt) nano inputs
+    it "toMicroseconds" $ test toMicroseconds Microseconds micro inputs
+    it "toMilliseconds" $ test toMilliseconds Milliseconds milli inputs
+    it "toSeconds" $ test toSeconds Seconds second inputs
+    it "toMinutes" $ test toMinutes Minutes minute inputs
+    it "toHours" $ test toHours Hours hour inputs
+    it "toDays" $ test toDays Days day inputs
+    it "toWeeks" $ test toWeeks Weeks week inputs
