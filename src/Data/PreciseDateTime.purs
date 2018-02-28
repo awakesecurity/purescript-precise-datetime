@@ -17,6 +17,7 @@ import Data.DateTime (DateTime)
 import Data.DateTime as DateTime
 import Data.Decimal (Decimal, pow)
 import Data.Decimal as Decimal
+import Data.Decimal.Extras (truncated)
 import Data.Enum (toEnum)
 import Data.Formatter.DateTime (format)
 import Data.Int (decimal)
@@ -29,7 +30,7 @@ import Data.RFC3339String (RFC3339String(..), trim)
 import Data.RFC3339String as RFC3339String
 import Data.String (Pattern(Pattern), drop, length, split, takeWhile)
 import Data.Time.Duration as Duration
-import Data.Time.PreciseDuration (PreciseDuration, toMilliseconds, toNanoseconds, unPreciseDuration)
+import Data.Time.PreciseDuration (PreciseDuration(..), toMilliseconds, toNanoseconds, unPreciseDuration)
 
 data PreciseDateTime = PreciseDateTime DateTime Nanosecond
 
@@ -93,8 +94,9 @@ adjust pd (PreciseDateTime dt ns) = do
     nsPrecDur = toNanoseconds pd
     nsPrecDurInt = unPreciseDuration nsPrecDur
     msPrecDur = toMilliseconds nsPrecDur
-    msPrecDurInt = unPreciseDuration msPrecDur
-    roundTripDurInt = unPreciseDuration <<< toNanoseconds $ msPrecDur
+    -- Truncate milliseconds to remove fractional nanoseconds.
+    msPrecDurInt = truncated $ unPreciseDuration msPrecDur
+    roundTripDurInt = unPreciseDuration <<< toNanoseconds $ Milliseconds msPrecDurInt
 
     negative = nsPrecDurInt < zero
     msModTen = msPrecDurInt `mod` ten
@@ -105,15 +107,14 @@ adjust pd (PreciseDateTime dt ns) = do
     -- not lossless, then we need to round up the lost nanoseconds to 1
     -- millisecond and adjust the duration.
     adjustment =
-      if negative && msModTen == zero && nsDiff < zero
+      if negative && truncated msModTen == zero && nsDiff < zero
          then 1
          else 0
 
     adjustedMsPrecDurInt = msPrecDurInt - Decimal.fromInt adjustment
 
     msDur :: Duration.Milliseconds
-    msDur = traceShow x (\_ -> x)
-      where x = Duration.Milliseconds <<< Decimal.toNumber $ adjustedMsPrecDurInt
+    msDur = Duration.Milliseconds <<< Decimal.toNumber $ adjustedMsPrecDurInt
 
   adjustedDateTime <- DateTime.adjust msDur dt
 
