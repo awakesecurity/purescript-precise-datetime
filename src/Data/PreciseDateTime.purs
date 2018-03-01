@@ -14,9 +14,8 @@ import Data.Array ((!!))
 import Data.Char.Unicode (isDigit)
 import Data.DateTime (DateTime)
 import Data.DateTime as DateTime
-import Data.Decimal (Decimal, pow, modulo)
+import Data.Decimal (Decimal, pow, modulo, truncated)
 import Data.Decimal as Decimal
-import Data.Decimal.Internal (truncated)
 import Data.Enum (toEnum)
 import Data.Formatter.DateTime (format)
 import Data.Int (decimal)

@@ -32,7 +32,7 @@
     "purescript-unicode": "^3.0.2",
     "purescript-profunctor": "^3.2.0",
     "purescript-numbers": "^5.0.0",
-    "purescript-decimals": "^3.3.0"
+    "purescript-decimals": "^3.4.0"
   },
   "devDependencies": {
     "purescript-psci-support": "^3.0.0",
