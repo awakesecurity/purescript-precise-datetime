@@ -14,11 +14,9 @@ module Data.Time.PreciseDuration
 
 import Prelude
 
-import Data.BigInt (BigInt)
 import Data.BigInt as BigInt
 import Data.Decimal (Decimal)
 import Data.Decimal as Decimal
-import Data.Maybe (fromMaybe)
 
 import Data.Time.PreciseDuration.Internal
 import Data.Time.PreciseDuration.Internal (PreciseDuration(..)) as PreciseDurationType

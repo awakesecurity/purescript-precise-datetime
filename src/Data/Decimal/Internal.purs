@@ -1,4 +1,4 @@
-module Data.Decimal.Extras where
+module Data.Decimal.Internal where
 
 import Data.Decimal
 
