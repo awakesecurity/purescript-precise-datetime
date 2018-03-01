@@ -12,7 +12,7 @@ module Data.Time.PreciseDuration
   , toWeeks
   ) where
 
-import Prelude
+import Prelude (($), (/), (<<<), (<>))
 
 import Data.BigInt as BigInt
 import Data.Decimal (Decimal)
