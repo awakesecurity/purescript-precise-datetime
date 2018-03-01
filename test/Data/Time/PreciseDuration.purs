@@ -6,7 +6,7 @@ import Control.Monad.Aff (Aff)
 import Data.Decimal (Decimal)
 import Data.Decimal as Decimal
 import Data.Maybe (fromJust)
-import Data.Traversable (for_)
+import Data.Traversable (traverse_)
 import Partial.Unsafe (unsafePartial)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
@@ -21,7 +21,7 @@ test
   -> Decimal
   -> Array Decimal
   -> Aff r Unit
-test fn ctr div inputs = for_ inputs \input -> do
+test fn ctr div = traverse_ \input -> do
   -- do not feed fractional values into nanoseconds
   when (Decimal.isInteger input) $
     fn (Nanoseconds $ decimalToBigInt input) `shouldEqual` (ctr $ input * nano / div)
