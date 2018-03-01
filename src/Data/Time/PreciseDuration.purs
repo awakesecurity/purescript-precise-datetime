@@ -18,7 +18,7 @@ import Data.BigInt as BigInt
 import Data.Decimal (Decimal)
 import Data.Decimal as Decimal
 
-import Data.Time.PreciseDuration.Internal
+import Data.Time.PreciseDuration.Internal (PreciseDuration(..), bigIntToDecimal, day, hour, micro, milli, minute, second, toNanosecondsBI, toNanosecondsD, week)
 import Data.Time.PreciseDuration.Internal (PreciseDuration(..)) as PreciseDurationType
 
 toString :: PreciseDuration -> String
