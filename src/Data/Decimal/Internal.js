@@ -1,4 +1,4 @@
-// module Data.BigInt.Extras
+// module Data.Decimal.Internal
 
 var Decimal = require("decimal.js");
 
