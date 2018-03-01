@@ -147,10 +147,7 @@ adjust pd (PreciseDateTime dt ns) = do
     maxNano = tenPowNine - Decimal.fromInt 1
     maxm = ten `pow` Decimal.fromInt 22
 
-    -- | `Data.Decimal` only provides `toNumber`, which loses precision for
-    -- | numbers which are too large meaning that
-    -- | `Int.fromNumber <<< Decimal.toNumber` could produce a valid `Int` but
-    -- | would lose precision.
+    -- | Coerce a `Data.Decimal` to an Int, preserving precision.
     toInt :: Decimal -> Maybe Int
     toInt = Int.fromString <<< Decimal.toString
 
