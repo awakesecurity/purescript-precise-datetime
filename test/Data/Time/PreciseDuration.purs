@@ -1,10 +1,8 @@
 module Test.Data.Time.PreciseDuration.Spec where
 
-import Data.Time.PreciseDuration
-import Prelude
-
+import Data.Time.PreciseDuration (PreciseDuration(..), day, decimalToBigInt, hour, micro, milli, minute, nano, second, toDays, toHours, toMicroseconds, toMilliseconds, toMinutes, toNanoseconds, toSeconds, toWeeks, week)
+import Prelude (Unit, discard, when, ($), (*), (/), (<<<))
 import Control.Monad.Aff (Aff)
-import Data.BigInt as BigInt
 import Data.Decimal (Decimal)
 import Data.Decimal as Decimal
 import Data.Maybe (fromJust)

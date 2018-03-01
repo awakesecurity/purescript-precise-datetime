@@ -14,7 +14,7 @@ import Data.Array ((!!))
 import Data.Char.Unicode (isDigit)
 import Data.DateTime (DateTime)
 import Data.DateTime as DateTime
-import Data.Decimal (Decimal, pow)
+import Data.Decimal (Decimal, pow, round, modulo)
 import Data.Decimal as Decimal
 import Data.Decimal.Extras (truncated)
 import Data.Enum (toEnum)
@@ -94,11 +94,11 @@ adjust pd (PreciseDateTime dt ns) = do
     nsPrecDurInt = unPreciseDuration nsPrecDur
     msPrecDur = toMilliseconds nsPrecDur
     -- Truncate milliseconds to remove fractional nanoseconds.
-    msPrecDurInt = truncated $ unPreciseDuration msPrecDur
-    roundTripDurInt = unPreciseDuration <<< toNanoseconds $ Milliseconds msPrecDurInt
+    msPrecDurDec = truncated $ unPreciseDuration msPrecDur
+    roundTripDurInt = unPreciseDuration <<< toNanoseconds $ Milliseconds msPrecDurDec
 
     negative = nsPrecDurInt < zero
-    msModTen = msPrecDurInt `mod` ten
+    msModTen = msPrecDurDec `modulo` ten
     nsDiff = nsPrecDurInt - roundTripDurInt
 
     -- If the duration is negative, the duration in milliseconds is a multiple
@@ -106,11 +106,11 @@ adjust pd (PreciseDateTime dt ns) = do
     -- not lossless, then we need to round up the lost nanoseconds to 1
     -- millisecond and adjust the duration.
     adjustment =
-      if negative && truncated msModTen == zero && nsDiff < zero
+      if negative && msModTen == zero && nsDiff < zero
          then 1
          else 0
 
-    adjustedMsPrecDurInt = msPrecDurInt - Decimal.fromInt adjustment
+    adjustedMsPrecDurInt = msPrecDurDec - Decimal.fromInt adjustment
 
     msDur :: Duration.Milliseconds
     msDur = Duration.Milliseconds <<< Decimal.toNumber $ adjustedMsPrecDurInt
