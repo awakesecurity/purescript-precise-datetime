@@ -7,7 +7,7 @@ import Data.Date as Date
 import Data.Enum (toEnum)
 import Data.Maybe (Maybe(..), fromJust)
 import Data.Newtype (class Newtype)
-import Data.PreciseDateTime (PreciseDateTime(..), adjust, fromRFC3339String, toRFC3339String)
+import Data.PreciseDateTime (PreciseDateTime(..), adjust, fromDateTime, fromRFC3339String, toRFC3339String)
 import Data.RFC3339String (RFC3339String(..))
 import Data.Time.PreciseDuration (PreciseDuration(..))
 import Partial.Unsafe (unsafePartial)
@@ -36,6 +36,22 @@ instance showSecondsAndNanos :: Show SecondsAndNanos where
 spec :: forall r. Spec r Unit
 spec =
   describe "PreciseDateTime" do
+    it "fromDateTime" do
+      let
+        yyyy = 2018
+        month = Date.March
+        dd = 2
+        hh = 9
+        mm = 56
+        ss = 37
+        ms = 123
+        ns = 123000000
+
+        dateTime = mkDateTime yyyy month dd hh mm ss ms
+        preciseDateTime = mkPreciseDateTime yyyy month dd hh mm ss ms ns
+
+      fromDateTime dateTime `shouldEqual` preciseDateTime
+
     it "fromRFC3339String" do
       fromRFC3339String (RFC3339String $ dateStringFixture <> "Z")
         `shouldEqual` (Just $ preciseDateTimeFixture 0 0)

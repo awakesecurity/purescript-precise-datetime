@@ -12,21 +12,22 @@ import Prelude
 import Control.Alt ((<|>))
 import Data.Array ((!!))
 import Data.Char.Unicode (isDigit)
-import Data.DateTime (DateTime)
+import Data.DateTime (DateTime, time)
 import Data.DateTime as DateTime
 import Data.Decimal (Decimal, pow, modulo, truncated)
 import Data.Decimal as Decimal
-import Data.Enum (toEnum)
+import Data.Enum (fromEnum, toEnum)
 import Data.Formatter.DateTime (format)
 import Data.Int (decimal)
 import Data.Int as Int
-import Data.Maybe (Maybe(..))
+import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Newtype (unwrap)
 import Data.PreciseDate.Component (Nanosecond)
 import Data.PreciseDateTime.Internal (dateTimeFormatISO)
 import Data.RFC3339String (RFC3339String(..), trim)
 import Data.RFC3339String as RFC3339String
 import Data.String (Pattern(Pattern), drop, length, split, takeWhile)
+import Data.Time (Millisecond, millisecond)
 import Data.Time.Duration as Duration
 import Data.Time.PreciseDuration (PreciseDuration(..), toMilliseconds, toNanoseconds, unPreciseDuration)
 
@@ -154,4 +155,13 @@ toDateTimeLossy :: PreciseDateTime -> DateTime
 toDateTimeLossy (PreciseDateTime dt _) = dt
 
 fromDateTime :: DateTime -> PreciseDateTime
-fromDateTime dt = PreciseDateTime dt bottom
+fromDateTime dt = PreciseDateTime dt ns
+  where
+  ms :: Millisecond
+  ms = millisecond $ time dt
+
+  nsFromMs :: Int
+  nsFromMs = fromEnum ms * 1000000
+
+  ns :: Nanosecond
+  ns = fromMaybe bottom $ toEnum nsFromMs
