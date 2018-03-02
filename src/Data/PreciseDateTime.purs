@@ -1,5 +1,6 @@
 module Data.PreciseDateTime
-  ( PreciseDateTime(..)
+  ( PreciseDateTime
+  , mkPreciseDateTime
   , adjust
   , fromRFC3339String
   , toRFC3339String
@@ -12,7 +13,7 @@ import Prelude
 import Control.Alt ((<|>))
 import Data.Array ((!!))
 import Data.Char.Unicode (isDigit)
-import Data.DateTime (DateTime, time)
+import Data.DateTime (Date, DateTime(DateTime), Hour, Minute, Second, Time(Time), time)
 import Data.DateTime as DateTime
 import Data.Decimal (Decimal, pow, modulo, truncated)
 import Data.Decimal as Decimal
@@ -42,6 +43,22 @@ instance boundedPreciseDateTime :: Bounded PreciseDateTime where
 
 instance showPreciseDateTime :: Show PreciseDateTime where
   show (PreciseDateTime dateTime ns) = "PreciseDateTime (" <> show dateTime <> ") " <> show ns
+
+
+mkPreciseDateTime
+  :: Date
+  -> Hour
+  -> Minute
+  -> Second
+  -> Nanosecond
+  -> PreciseDateTime
+mkPreciseDateTime d h m s ns = PreciseDateTime dt ns
+  where
+  msFromNs = fromEnum ns / 1000000
+  ms = fromMaybe bottom $ toEnum msFromNs
+  t = Time h m s ms
+  dt = DateTime d t
+
 
 nanoStringPadding = "000000000" :: String
 
