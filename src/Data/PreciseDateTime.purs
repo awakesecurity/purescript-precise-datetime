@@ -12,6 +12,7 @@ import Prelude
 
 import Control.Alt ((<|>))
 import Data.Array ((!!))
+import Data.BigInt as BigInt
 import Data.Char.Unicode (isDigit)
 import Data.DateTime (Date, DateTime(DateTime), Hour, Minute, Second, Time(Time), time)
 import Data.DateTime as DateTime
@@ -21,7 +22,7 @@ import Data.Enum (fromEnum, toEnum)
 import Data.Formatter.DateTime (format)
 import Data.Int (decimal)
 import Data.Int as Int
-import Data.Maybe (Maybe(..), fromMaybe)
+import Data.Maybe (Maybe(..), fromJust, fromMaybe)
 import Data.Newtype (unwrap)
 import Data.PreciseDate.Component (Nanosecond)
 import Data.PreciseDateTime.Internal (dateTimeFormatISO)
@@ -31,6 +32,7 @@ import Data.String (Pattern(Pattern), drop, length, split, takeWhile)
 import Data.Time (Millisecond, millisecond)
 import Data.Time.Duration as Duration
 import Data.Time.PreciseDuration (PreciseDuration(..), toMilliseconds, toNanoseconds, unPreciseDuration)
+import Partial.Unsafe (unsafePartial)
 
 data PreciseDateTime = PreciseDateTime DateTime Nanosecond
 
@@ -52,12 +54,12 @@ mkPreciseDateTime
   -> Second
   -> Nanosecond
   -> PreciseDateTime
-mkPreciseDateTime d h m s ns = PreciseDateTime dt ns
+mkPreciseDateTime d h m s ns = unsafePartial fromJust pdt -- FIXME: unsafePartial fromJust
   where
-  msFromNs = fromEnum ns / 1000000
-  ms = fromMaybe bottom $ toEnum msFromNs
-  t = Time h m s ms
+  t = Time h m s bottom
   dt = DateTime d t
+  adjustment = Nanoseconds (BigInt.fromInt $ fromEnum ns)
+  pdt = adjust adjustment $ PreciseDateTime dt bottom
 
 
 nanoStringPadding = "000000000" :: String
