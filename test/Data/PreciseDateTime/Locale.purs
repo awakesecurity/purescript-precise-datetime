@@ -2,10 +2,11 @@ module Test.Data.PreciseDateTime.Locale.Spec where
 
 import Prelude
 
-import Data.BigInt (fromInt)
+import Data.Decimal (fromInt)
 import Data.DateTime.Locale (LocalValue(..), Locale(..))
 import Data.Int (toNumber)
 import Data.Maybe (Maybe(..))
+import Data.PreciseDateTime (PreciseDateTime)
 import Data.PreciseDateTime as PDT
 import Data.PreciseDateTime.Locale (fromRFC3339String, toRFC3339String)
 import Data.RFC3339String (RFC3339String(..))
@@ -15,9 +16,10 @@ import Test.Data.PreciseDateTime.Spec (dateStringFixture, preciseDateTimeFixture
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
 
+withTZ :: Int -> PreciseDateTime -> Maybe (LocalValue PreciseDateTime)
 withTZ hrsTZ = map (LocalValue (Locale Nothing (Dur.convertDuration (Dur.Hours (toNumber hrsTZ)))))
                <<< PDT.adjust (Hours (fromInt (negate hrsTZ)))
-
+withTZMins :: Int -> PreciseDateTime -> Maybe (LocalValue PreciseDateTime)
 withTZMins minsTZ = map (LocalValue (Locale Nothing (Dur.convertDuration (Dur.Minutes (toNumber minsTZ)))))
                <<< PDT.adjust (Minutes (fromInt (negate minsTZ)))
 
@@ -46,7 +48,7 @@ spec =
 
     it "toRFC3339String" do
       toRFC3339String (LocalValue (Locale Nothing zero) (preciseDateTimeFixture 0 0))
-        `shouldEqual` RFC3339String (dateStringFixture <>"Z")
+        `shouldEqual` RFC3339String (dateStringFixture <>".0Z")
 
       toRFC3339String (LocalValue (Locale Nothing (Dur.convertDuration (Dur.Hours 4.0))) (preciseDateTimeFixture 0 0))
-        `shouldEqual` RFC3339String (dateStringFixture <>"+04:00")
+        `shouldEqual` RFC3339String (dateStringFixture <>".0+04:00")

@@ -11,11 +11,11 @@ import Prelude
 
 import Control.Alt ((<|>))
 import Data.Array ((!!))
-import Data.BigInt (BigInt, pow)
-import Data.BigInt as BigInt
 import Data.Char.Unicode (isDigit)
 import Data.DateTime (DateTime)
 import Data.DateTime as DateTime
+import Data.Decimal (Decimal, pow, modulo, truncated)
+import Data.Decimal as Decimal
 import Data.Enum (toEnum)
 import Data.Formatter.DateTime (format)
 import Data.Int (decimal)
@@ -28,7 +28,7 @@ import Data.RFC3339String (RFC3339String(..), trim)
 import Data.RFC3339String as RFC3339String
 import Data.String (Pattern(Pattern), drop, length, split, takeWhile)
 import Data.Time.Duration as Duration
-import Data.Time.PreciseDuration (PreciseDuration, toMilliseconds, toNanoseconds, unPreciseDuration)
+import Data.Time.PreciseDuration (PreciseDuration(..), toMilliseconds, toNanoseconds, unPreciseDuration)
 
 data PreciseDateTime = PreciseDateTime DateTime Nanosecond
 
@@ -92,11 +92,12 @@ adjust pd (PreciseDateTime dt ns) = do
     nsPrecDur = toNanoseconds pd
     nsPrecDurInt = unPreciseDuration nsPrecDur
     msPrecDur = toMilliseconds nsPrecDur
-    msPrecDurInt = unPreciseDuration msPrecDur
-    roundTripDurInt = unPreciseDuration <<< toNanoseconds $ msPrecDur
+    -- Truncate milliseconds to remove fractional nanoseconds.
+    msPrecDurDec = truncated $ unPreciseDuration msPrecDur
+    roundTripDurInt = unPreciseDuration <<< toNanoseconds $ Milliseconds msPrecDurDec
 
     negative = nsPrecDurInt < zero
-    msModTen = msPrecDurInt `mod` ten
+    msModTen = msPrecDurDec `modulo` ten
     nsDiff = nsPrecDurInt - roundTripDurInt
 
     -- If the duration is negative, the duration in milliseconds is a multiple
@@ -108,26 +109,26 @@ adjust pd (PreciseDateTime dt ns) = do
          then 1
          else 0
 
-    adjustedMsPrecDurInt = msPrecDurInt - BigInt.fromInt adjustment
+    adjustedMsPrecDurInt = msPrecDurDec - Decimal.fromInt adjustment
 
     msDur :: Duration.Milliseconds
-    msDur = Duration.Milliseconds <<< BigInt.toNumber $ adjustedMsPrecDurInt
+    msDur = Duration.Milliseconds <<< Decimal.toNumber $ adjustedMsPrecDurInt
 
   adjustedDateTime <- DateTime.adjust msDur dt
 
   -- If the duration is larger than can be represented in a `Nanosecond`
   -- component, take the last 9 digits.
   let
-    unsigned = BigInt.abs nsPrecDurInt
-    nsString = BigInt.toString unsigned
+    unsigned = Decimal.abs nsPrecDurInt
+    nsString = Decimal.toString unsigned
 
     lastNine =
       if unsigned > maxNano
         then drop (length nsString - 9) nsString
         else nsString
 
-  adjustedNsPrecDurInt <- BigInt.fromString lastNine
-  let adjustedNsInt = BigInt.fromInt (unwrap ns) + adjustedNsPrecDurInt
+  adjustedNsPrecDurInt <- Decimal.fromString lastNine
+  let adjustedNsInt = Decimal.fromInt (unwrap ns) + adjustedNsPrecDurInt
 
   let
     inverted =
@@ -139,18 +140,15 @@ adjust pd (PreciseDateTime dt ns) = do
   pure (PreciseDateTime adjustedDateTime adjustedNs)
 
   where
-    zero = BigInt.fromInt 0
-    ten = BigInt.fromInt 10
-    tenPowNine = ten `pow` BigInt.fromInt 9
-    maxNano = tenPowNine - BigInt.fromInt 1
-    maxm = ten `pow` BigInt.fromInt 22
+    zero = Decimal.fromInt 0
+    ten = Decimal.fromInt 10
+    tenPowNine = ten `pow` Decimal.fromInt 9
+    maxNano = tenPowNine - Decimal.fromInt 1
+    maxm = ten `pow` Decimal.fromInt 22
 
-    -- | `Data.BigInt` only provides `toNumber`, which loses precision for
-    -- | numbers which are too large meaning that
-    -- | `Int.fromNumber <<< BigInt.toNumber` could produce a valid `Int` but
-    -- | would lose precision.
-    toInt :: BigInt -> Maybe Int
-    toInt = Int.fromString <<< BigInt.toString
+    -- | Coerce a `Data.Decimal` to an Int, preserving precision.
+    toInt :: Decimal -> Maybe Int
+    toInt = Int.fromString <<< Decimal.toString
 
 toDateTimeLossy :: PreciseDateTime -> DateTime
 toDateTimeLossy (PreciseDateTime dt _) = dt

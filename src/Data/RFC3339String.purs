@@ -4,20 +4,19 @@ import Prelude
 
 import Control.Monad.Eff (Eff, runPure)
 import Control.Monad.Eff.Unsafe (unsafeCoerceEff)
-import Data.BigInt (fromInt)
 import Data.DateTime (DateTime)
-import Data.DateTime.Locale (LocalDateTime, LocalValue(..), Locale(..))
+import Data.DateTime.Locale (Locale(..))
 import Data.Either (hush)
 import Data.Foldable (foldr)
 import Data.Formatter.DateTime (format)
 import Data.Int (fromString, toNumber)
-import Data.JSDate (JSDate, LOCALE, getHours, getMinutes, getUTCHours, getUTCMinutes)
+import Data.JSDate (JSDate, LOCALE)
 import Data.JSDate as JSDate
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Newtype (class Newtype, unwrap)
-import Data.RFC3339String.Format (formatLocale, iso8601Format)
+import Data.RFC3339String.Format (iso8601Format)
 import Data.String as String
-import Data.String.Regex as RE
+import Data.String.Regex (match, regex) as RE
 import Data.String.Regex.Flags (noFlags) as RE
 import Data.Time.Duration (Hours(..), Minutes(..), convertDuration)
 import Data.Traversable (sequence)
@@ -41,7 +40,10 @@ trim (RFC3339String s) =
     withoutTrailingZeros = dropWhileEnd (eq '0') withoutZulu
     withoutTrailingDot = dropWhileEnd (eq '.') withoutTrailingZeros
   in
-    RFC3339String $ withoutTrailingDot <> "Z"
+    if withoutTrailingZeros == withoutTrailingDot
+    then RFC3339String $ withoutTrailingDot <> "Z"
+         -- always have a subseconds component
+    else RFC3339String $ withoutTrailingDot <> ".0Z"
 
 -- | Use our own formatter since we'd otherwise need to convert from `DateTime`
 -- | to `JSDate` first, and `Data.JSDate.toISOString` can throw exceptions.

@@ -75,7 +75,7 @@ spec =
 
     it "toRFC3339String" do
       toRFC3339String (preciseDateTimeFixture 0 0)
-        `shouldEqual` (RFC3339String $ dateStringFixture <> "Z")
+        `shouldEqual` (RFC3339String $ dateStringFixture <> ".0Z")
 
       toRFC3339String (preciseDateTimeFixture 123 123000000)
         `shouldEqual` (RFC3339String $ dateStringFixture <> ".123Z")
