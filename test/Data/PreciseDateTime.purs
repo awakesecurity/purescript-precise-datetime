@@ -47,21 +47,38 @@ spec :: forall r. Spec r Unit
 spec =
   describe "PreciseDateTime" do
     describe "mkPreciseDateTime" do
-      it "works as expected with toDateTimeLossy" do
-        let
-          year = unsafeToEnum 2018
-          month = Date.March
-          day = unsafeToEnum 2
-          hour = unsafeToEnum 9
-          minute = unsafeToEnum 56
-          second = unsafeToEnum 37
-          nanosecond = unsafeToEnum 123456789
+      describe "works as expected with toDateTimeLossy" do
+        it "when rounding" do
+          let
+            year = unsafeToEnum 2018
+            month = Date.March
+            day = unsafeToEnum 2
+            hour = unsafeToEnum 9
+            minute = unsafeToEnum 56
+            second = unsafeToEnum 37
+            nanosecond = unsafeToEnum 876543211
 
-          date = unsafeExactDate year month day
-          dateTime = mkDateTime 2018 Date.March 2 9 56 37 123
+            date = unsafeExactDate year month day
+            dateTime = mkDateTime 2018 Date.March 2 9 56 37 877
 
-        toDateTimeLossy (mkPreciseDateTime date hour minute second nanosecond)
-          `shouldEqual` dateTime
+          toDateTimeLossy (mkPreciseDateTime date hour minute second nanosecond)
+            `shouldEqual` dateTime
+
+        it "when not rounding" do
+          let
+            year = unsafeToEnum 2018
+            month = Date.March
+            day = unsafeToEnum 2
+            hour = unsafeToEnum 9
+            minute = unsafeToEnum 56
+            second = unsafeToEnum 37
+            nanosecond = unsafeToEnum 123456789
+
+            date = unsafeExactDate year month day
+            dateTime = mkDateTime 2018 Date.March 2 9 56 37 123
+
+          toDateTimeLossy (mkPreciseDateTime date hour minute second nanosecond)
+            `shouldEqual` dateTime
 
     it "fromDateTime" do
       let
