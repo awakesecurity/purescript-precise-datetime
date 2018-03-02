@@ -29,26 +29,26 @@ spec =
     it "fromRFC3339String" do
 
       fromRFC3339String (RFC3339String $ dateStringFixture <> "+08:00")
-        `shouldEqual` withTZ 8 (preciseDateTimeFixture 0 0)
+        `shouldEqual` withTZ 8 (preciseDateTimeFixture 0)
 
       fromRFC3339String (RFC3339String $ dateStringFixture <> "-08:00")
-        `shouldEqual` withTZ (-8) (preciseDateTimeFixture 0 0)
+        `shouldEqual` withTZ (-8) (preciseDateTimeFixture 0)
 
       fromRFC3339String (RFC3339String $ dateStringFixture <> "Z")
-        `shouldEqual` withTZ 0 (preciseDateTimeFixture 0 0)
+        `shouldEqual` withTZ 0 (preciseDateTimeFixture 0)
 
       fromRFC3339String (RFC3339String $ dateStringFixture <> "-00:00")
-        `shouldEqual` withTZ 0 (preciseDateTimeFixture 0 0)
+        `shouldEqual` withTZ 0 (preciseDateTimeFixture 0)
 
       fromRFC3339String (RFC3339String $ dateStringFixture <> "+00:00")
-        `shouldEqual` withTZ 0 (preciseDateTimeFixture 0 0)
+        `shouldEqual` withTZ 0 (preciseDateTimeFixture 0)
 
       fromRFC3339String (RFC3339String $ dateStringFixture <> "-00:01")
-        `shouldEqual` withTZMins (-1) (preciseDateTimeFixture 0 0)
+        `shouldEqual` withTZMins (-1) (preciseDateTimeFixture 0)
 
     it "toRFC3339String" do
-      toRFC3339String (LocalValue (Locale Nothing zero) (preciseDateTimeFixture 0 0))
+      toRFC3339String (LocalValue (Locale Nothing zero) (preciseDateTimeFixture 0))
         `shouldEqual` RFC3339String (dateStringFixture <>".0Z")
 
-      toRFC3339String (LocalValue (Locale Nothing (Dur.convertDuration (Dur.Hours 4.0))) (preciseDateTimeFixture 0 0))
+      toRFC3339String (LocalValue (Locale Nothing (Dur.convertDuration (Dur.Hours 4.0))) (preciseDateTimeFixture 0))
         `shouldEqual` RFC3339String (dateStringFixture <>".0+04:00")
