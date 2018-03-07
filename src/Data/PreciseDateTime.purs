@@ -47,9 +47,7 @@ nanoStringPadding = "000000" :: String
 subsecondStringPadding = "000000000" :: String
 
 padString :: String -> (String -> String -> String) -> String -> String
-padString p fn string =
-  let padding = drop (length string) p
-  in fn string padding
+padString padding fn string = fn string $ drop (length string) padding
 
 padMilliString :: (String -> String -> String) -> String -> String
 padMilliString = padString milliStringPadding
