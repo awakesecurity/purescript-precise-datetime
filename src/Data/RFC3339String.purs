@@ -12,11 +12,11 @@ import Data.Formatter.DateTime (format)
 import Data.Int (fromString, toNumber)
 import Data.JSDate (JSDate, LOCALE)
 import Data.JSDate as JSDate
-import Data.Maybe (Maybe(..), fromMaybe)
+import Data.Maybe (Maybe(..), fromMaybe, fromJust)
 import Data.Newtype (class Newtype, unwrap)
 import Data.RFC3339String.Format (iso8601Format)
 import Data.String as String
-import Data.String.Regex (match, regex) as RE
+import Data.String.Regex (match, regex, replace) as RE
 import Data.String.Regex.Flags (noFlags) as RE
 import Data.Time.Duration (Hours(..), Minutes(..), convertDuration)
 import Data.Traversable (sequence)
@@ -61,6 +61,15 @@ toLocale (RFC3339String s) = Locale Nothing $ fromMaybe zero $ unsafePartial $ d
   let offset = convertDuration (Hours hrs') + Minutes mins'
   pure $ (if sign == "-" then negate else id) offset
 
+-- | Fixes the locale to be UTC.
+-- See note for 'toDateTime' below.
+normalizeLocale :: RFC3339String -> RFC3339String
+normalizeLocale (RFC3339String s) = RFC3339String $ unsafePartial $ fromJust $ do
+  re <- hush $ RE.regex "(([-|\\+])(\\d\\d):?(\\d\\d))|Z$" RE.noFlags
+  pure $ RE.replace re "" s <> "Z"
+
+-- NB: JSDate.toDateTime will normalize the timestamp to UTC time.
+-- If no locale is specified, the current host's locale is used.
 toDateTime :: RFC3339String -> Maybe DateTime
 toDateTime = JSDate.toDateTime <<< unsafeParse <<< unwrap
   where

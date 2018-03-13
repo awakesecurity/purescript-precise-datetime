@@ -24,7 +24,7 @@ import Data.Maybe (Maybe(..))
 import Data.Newtype (unwrap)
 import Data.PreciseDate.Component (Nanosecond)
 import Data.PreciseDateTime.Internal (dateTimeFormatISO)
-import Data.RFC3339String (RFC3339String(..), trim)
+import Data.RFC3339String (RFC3339String(..), trim, normalizeLocale)
 import Data.RFC3339String as RFC3339String
 import Data.String (Pattern(Pattern), drop, length, split, take, takeWhile)
 import Data.Time.Duration as Duration
@@ -94,7 +94,7 @@ nanosecond rfcString = nanoseconds rfcString <|> Just 0 >>= toEnum
 
 fromRFC3339String :: RFC3339String -> Maybe PreciseDateTime
 fromRFC3339String rfcString = do
-  dateTime <- RFC3339String.toDateTime rfcString
+  dateTime <- RFC3339String.toDateTime (normalizeLocale rfcString)
   ns <- nanosecond rfcString
   pure $ PreciseDateTime dateTime ns
 
