@@ -48,6 +48,7 @@ bigIntToDecimal = fromMaybe zero -- the conversion should never fail
 decimalToBigInt :: Decimal -> BigInt
 decimalToBigInt = fromMaybe zero -- the conversion should never fail
                   <<< BigInt.fromString <<< Decimal.toString
+                  <<< Decimal.truncated
 
 toNanosecondsD :: PreciseDuration -> Decimal
 toNanosecondsD =
