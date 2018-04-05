@@ -2,7 +2,7 @@ module Test.Data.PreciseDateTime.Spec where
 
 import Prelude
 
-import Data.BigInt (fromInt, fromString)
+import Data.Decimal (fromInt, fromString)
 import Data.Date as Date
 import Data.Enum (toEnum)
 import Data.Maybe (Maybe(..), fromJust)

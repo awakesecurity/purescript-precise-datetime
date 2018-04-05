@@ -1,7 +1,7 @@
 module Test.Data.Time.PreciseDuration.Spec where
 
 import Data.Time.PreciseDuration (PreciseDuration(..), toDays, toHours, toMicroseconds, toMilliseconds, toMinutes, toNanoseconds, toSeconds, toWeeks)
-import Data.Time.PreciseDuration.Internal (day, decimalToBigInt, hour, micro, milli, minute, nano, second, week)
+import Data.Time.PreciseDuration.Internal (day, hour, micro, milli, minute, nano, second, week)
 import Prelude (Unit, discard, when, ($), (*), (/), (<<<))
 import Control.Monad.Aff (Aff)
 import Data.Decimal (Decimal)
@@ -22,10 +22,10 @@ test
   -> Decimal
   -> Array Decimal
   -> Aff r Unit
-test fn ctr div = traverse_ \input -> do
+test fn ctr div = traverse_ \(input :: Decimal) -> do
   -- do not feed fractional values into nanoseconds
   when (Decimal.isInteger input) $
-    fn (Nanoseconds $ decimalToBigInt input) `shouldEqual` (ctr $ input * nano / div)
+    fn (Nanoseconds input) `shouldEqual` (ctr $ input * nano / div)
   fn (Microseconds input) `shouldEqual` (ctr $ input * micro / div)
   fn (Milliseconds input) `shouldEqual` (ctr $ input * milli / div)
   fn (Seconds input) `shouldEqual` (ctr $ input * second / div)
@@ -38,7 +38,7 @@ spec =
   describe "PreciseDuration" do
     let inputs = [ unsafeFromString "123456789", unsafeFromString "0.5" ]
 
-    it "toNanoseconds" $ test toNanoseconds (Nanoseconds <<< decimalToBigInt) nano inputs
+    it "toNanoseconds" $ test toNanoseconds Nanoseconds nano inputs
     it "toMicroseconds" $ test toMicroseconds Microseconds micro inputs
     it "toMilliseconds" $ test toMilliseconds Milliseconds milli inputs
     it "toSeconds" $ test toSeconds Seconds second inputs

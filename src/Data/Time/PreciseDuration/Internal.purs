@@ -9,7 +9,7 @@ import Data.Decimal as Decimal
 import Data.Maybe (fromMaybe)
 
 data PreciseDuration
-  = Nanoseconds BigInt -- this is BigInt to prevent fractional nanoseconds
+  = Nanoseconds Decimal -- BigInt -- this is BigInt to prevent fractional nanoseconds
   | Microseconds Decimal
   | Milliseconds Decimal
   | Seconds Decimal
@@ -41,21 +41,21 @@ hour   = (minute * Decimal.fromInt 60) :: Decimal
 day    = (hour * Decimal.fromInt 24) :: Decimal
 week   = (day * Decimal.fromInt 7) :: Decimal
 
-bigIntToDecimal :: BigInt -> Decimal
-bigIntToDecimal = fromMaybe zero -- the conversion should never fail
-                  <<< Decimal.fromString <<< BigInt.toString
+-- bigIntToDecimal :: BigInt -> Decimal
+-- bigIntToDecimal = fromMaybe zero -- the conversion should never fail
+--                   <<< Decimal.fromString <<< BigInt.toString
 
-decimalToBigInt :: Decimal -> BigInt
-decimalToBigInt = fromMaybe zero  -- this case should never be hit
-                  <<< BigInt.fromString <<< Decimal.toString
-                  <<< Decimal.truncated -- the conversion will lose the mantissa
+-- decimalToBigInt :: Decimal -> BigInt
+-- decimalToBigInt = fromMaybe zero  -- this case should never be hit
+--                   <<< BigInt.fromString <<< Decimal.toString
+--                   <<< Decimal.truncated -- the conversion will lose the mantissa
 
 -- Note: While toNanosecondsD can be defined in terms of toNanosecondsBI (and vice
 -- versa), we do not do so in order to avoid converting between those types.
 
 toNanosecondsD :: PreciseDuration -> Decimal
 toNanosecondsD = case _ of
-  Nanoseconds d  -> bigIntToDecimal d
+  Nanoseconds d  -> d
   Microseconds d -> d * micro
   Milliseconds d -> d * milli
   Seconds d      -> d * second
@@ -64,14 +64,14 @@ toNanosecondsD = case _ of
   Days d         -> d * day
   Weeks d        -> d * week
 
-toNanosecondsBI :: PreciseDuration -> BigInt
-toNanosecondsBI = case _ of
-  Nanoseconds d  -> d
-  -- these are ok because we first convert to nanoseconds, which cannot be fractional
-  Microseconds d -> decimalToBigInt $ d * micro
-  Milliseconds d -> decimalToBigInt $ d * milli
-  Seconds d      -> decimalToBigInt $ d * second
-  Minutes d      -> decimalToBigInt $ d * minute
-  Hours d        -> decimalToBigInt $ d * hour
-  Days d         -> decimalToBigInt $ d * day
-  Weeks d        -> decimalToBigInt $ d * week
+-- toNanosecondsBI :: PreciseDuration -> BigInt
+-- toNanosecondsBI = case _ of
+--   Nanoseconds d  -> d
+--   -- these are ok because we first convert to nanoseconds, which cannot be fractional
+--   Microseconds d -> decimalToBigInt $ d * micro
+--   Milliseconds d -> decimalToBigInt $ d * milli
+--   Seconds d      -> decimalToBigInt $ d * second
+--   Minutes d      -> decimalToBigInt $ d * minute
+--   Hours d        -> decimalToBigInt $ d * hour
+--   Days d         -> decimalToBigInt $ d * day
+--   Weeks d        -> decimalToBigInt $ d * week
