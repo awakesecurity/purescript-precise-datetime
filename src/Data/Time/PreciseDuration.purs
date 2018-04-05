@@ -1,6 +1,8 @@
 module Data.Time.PreciseDuration
   ( module PreciseDurationType
   , toString
+  , nanoseconds, microseconds, milliseconds, seconds, minutes, hours, days, weeks
+  , unPreciseDuration
   , toNanoseconds
   , toMicroseconds
   , toMilliseconds
@@ -56,6 +58,9 @@ days = Days
 
 weeks :: Decimal -> PreciseDuration
 weeks = Weeks
+
+unPreciseDuration :: PreciseDuration -> Decimal
+unPreciseDuration = toNanosecondsD
 
 -- Conversions
 toNanoseconds :: PreciseDuration -> PreciseDuration
