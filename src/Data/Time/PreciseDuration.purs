@@ -1,7 +1,6 @@
 module Data.Time.PreciseDuration
   ( module PreciseDurationType
   , toString
-  , unwrapPreciseDuration
   , toNanoseconds
   , toMicroseconds
   , toMilliseconds
@@ -23,27 +22,15 @@ import Data.Time.PreciseDuration.Internal (PreciseDuration(..), day, hour, micro
 import Data.Time.PreciseDuration.Internal (PreciseDuration(..)) as PreciseDurationType
 
 toString :: PreciseDuration -> String
-toString =
-  case _ of
-    Nanoseconds d -> Decimal.toString d <> "ns"
-    Microseconds d -> Decimal.toString d <> "us"
-    Milliseconds d -> Decimal.toString d <> "ms"
-    Seconds d -> Decimal.toString d <> "s"
-    Minutes d -> Decimal.toString d <> "m"
-    Hours d -> Decimal.toString d <> "h"
-    Days d -> Decimal.toString d <> "d"
-    Weeks d -> Decimal.toString d <> "w"
-
-unwrapPreciseDuration :: PreciseDuration -> Decimal
-unwrapPreciseDuration = case _ of
-  Nanoseconds d -> d
-  Microseconds d -> d
-  Milliseconds d -> d
-  Seconds d -> d
-  Minutes d -> d
-  Hours d -> d
-  Days d -> d
-  Weeks d -> d
+toString = case _ of
+  Nanoseconds d -> Decimal.toString d <> "ns"
+  Microseconds d -> Decimal.toString d <> "us"
+  Milliseconds d -> Decimal.toString d <> "ms"
+  Seconds d -> Decimal.toString d <> "s"
+  Minutes d -> Decimal.toString d <> "m"
+  Hours d -> Decimal.toString d <> "h"
+  Days d -> Decimal.toString d <> "d"
+  Weeks d -> Decimal.toString d <> "w"
 
 -- Smart constructors
 nanoseconds :: Int -> PreciseDuration
