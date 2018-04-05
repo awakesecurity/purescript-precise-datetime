@@ -1,7 +1,7 @@
 module Data.Time.PreciseDuration
   ( module PreciseDurationType
   , toString
-  , unPreciseDuration
+  , unwrapPreciseDuration
   , toNanoseconds
   , toMicroseconds
   , toMilliseconds
@@ -34,9 +34,16 @@ toString =
     Days d -> Decimal.toString d <> "d"
     Weeks d -> Decimal.toString d <> "w"
 
--- | Returns the number of nanoseconds represented by this 'PreciseDuration'.
-unPreciseDuration :: PreciseDuration -> BigInt
-unPreciseDuration = toNanosecondsBI
+unwrapPreciseDuration :: PreciseDuration -> Decimal
+unwrapPreciseDuration = case _ of
+  Nanoseconds d -> bigIntToDecimal d
+  Microseconds d -> d
+  Milliseconds d -> d
+  Seconds d -> d
+  Minutes d -> d
+  Hours d -> d
+  Days d -> d
+  Weeks d -> d
 
 toNanoseconds :: PreciseDuration -> PreciseDuration
 toNanoseconds = Nanoseconds <<< toNanosecondsBI
