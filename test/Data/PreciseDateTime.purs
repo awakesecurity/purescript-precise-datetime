@@ -7,7 +7,7 @@ import Data.Date as Date
 import Data.Enum (toEnum)
 import Data.Maybe (Maybe(..), fromJust)
 import Data.Newtype (class Newtype)
-import Data.PreciseDateTime (PreciseDateTime(..), adjust, fromRFC3339String, toRFC3339String)
+import Data.PreciseDateTime (PreciseDateTime(..), adjust, diff, fromRFC3339String, toRFC3339String)
 import Data.RFC3339String (RFC3339String(..))
 import Data.Time.PreciseDuration (PreciseDuration)
 import Data.Time.PreciseDuration (make, unsafeNanoseconds) as PD
@@ -93,6 +93,47 @@ spec =
 
       toRFC3339String (preciseDateTimeFixture 0 456009)
         `shouldEqual` (RFC3339String $ dateStringFixture <> ".000456009Z")
+
+    it "diff" do
+      diff (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+        `shouldEqual` (Nanoseconds <<< fromInt $ 0)
+
+      diff (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 1) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+        `shouldEqual` (Nanoseconds <<< fromInt $ 1)
+
+      diff (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 1)
+        `shouldEqual` (Nanoseconds <<< fromInt $ -1)
+
+      diff (mkPreciseDateTime 1985 Date.March 12 23 59 59 999 999999) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+        `shouldEqual` (Nanoseconds <<< fromInt $ -1)
+
+      diff (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0) (mkPreciseDateTime 1985 Date.March 12 23 59 59 999 999999)
+        `shouldEqual` (Nanoseconds <<< fromInt $ 1)
+
+      diff (mkPreciseDateTime 1985 Date.March 12 23 59 59 999 0) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+        `shouldEqual` (Nanoseconds <<< fromInt $ -1000000)
+
+      diff (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0) (mkPreciseDateTime 1985 Date.March 12 23 59 59 999 0)
+        `shouldEqual` (Nanoseconds <<< fromInt $ 1000000)
+
+      diff (mkPreciseDateTime 1985 Date.March 13 0 0 1 0 1) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+        `shouldEqual` (Nanoseconds <<< fromInt $ 1000000001)
+
+      diff (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0) (mkPreciseDateTime 1985 Date.March 13 0 0 1 0 1)
+        `shouldEqual` (Nanoseconds <<< fromInt $ -1000000001)
+
+      diff (mkPreciseDateTime 1985 Date.March 12 23 59 58 999 999999) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+        `shouldEqual` (Nanoseconds <<< fromInt $ -1000000001)
+
+      diff (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0) (mkPreciseDateTime 1985 Date.March 12 23 59 58 999 999999)
+        `shouldEqual` (Nanoseconds <<< fromInt $ 1000000001)
+
+      diff (mkPreciseDateTime 1985 Date.March 20 0 0 0 0 1) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+        `shouldEqual` (Nanoseconds <<< unsafePartial fromJust <<< fromString $ "604800000000001")
+
+      diff (mkPreciseDateTime 1985 Date.March 5 23 59 59 999 999999) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+        `shouldEqual` (Nanoseconds <<< unsafePartial fromJust <<< fromString $ "-604800000000001")
+
 
     it "adjust" do
       adjust (PD.make.nanoseconds 0) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)

@@ -1,6 +1,7 @@
 module Data.PreciseDateTime
   ( PreciseDateTime(..)
   , adjust
+  , diff
   , fromRFC3339String
   , toRFC3339String
   , toDateTimeLossy
@@ -11,6 +12,7 @@ import Prelude
 
 import Control.Alt ((<|>))
 import Data.Array ((!!))
+import Data.BigInt (fromNumber) as BigInt
 import Data.Char.Unicode (isDigit)
 import Data.DateTime (DateTime, millisecond, time)
 import Data.DateTime as DateTime
@@ -22,7 +24,7 @@ import Data.Int (decimal)
 import Data.Int as Int
 import Data.Maybe (Maybe(..))
 import Data.Newtype (unwrap)
-import Data.PreciseDate.Component (Nanosecond)
+import Data.PreciseDate.Component (Nanosecond(..))
 import Data.PreciseDateTime.Internal (dateTimeFormatISO)
 import Data.RFC3339String (RFC3339String(..), trim)
 import Data.RFC3339String as RFC3339String
@@ -173,6 +175,14 @@ adjust pd (PreciseDateTime dt ns) = do
     -- | Coerce a `Data.Decimal` to an Int, preserving precision.
     toInt :: Decimal -> Maybe Int
     toInt = Int.fromString <<< Decimal.toString
+
+
+diff :: PreciseDateTime -> PreciseDateTime -> PreciseDuration
+diff (PreciseDateTime dt0 (Nanosecond ns0)) (PreciseDateTime dt1 (Nanosecond ns1)) =
+  let Duration.Milliseconds msNum = DateTime.diff dt0 dt1
+      nsNum = Int.toNumber (ns0 - ns1) + msNum * 1000000.0
+  in
+    Nanoseconds (BigInt.fromNumber nsNum)
 
 toDateTimeLossy :: PreciseDateTime -> DateTime
 toDateTimeLossy (PreciseDateTime dt _) = dt
