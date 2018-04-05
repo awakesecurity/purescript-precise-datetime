@@ -12,7 +12,6 @@ import Prelude
 
 import Control.Alt ((<|>))
 import Data.Array ((!!))
-import Data.BigInt (fromNumber) as BigInt
 import Data.Char.Unicode (isDigit)
 import Data.DateTime (DateTime, millisecond, time)
 import Data.DateTime as DateTime
@@ -31,7 +30,7 @@ import Data.RFC3339String as RFC3339String
 import Data.String (Pattern(Pattern), drop, length, split, take, takeWhile)
 import Data.Time.Duration as Duration
 import Data.Time.PreciseDuration (PreciseDuration, toMilliseconds, toNanoseconds)
-import Data.Time.PreciseDuration (make) as PDT
+import Data.Time.PreciseDuration as PD
 import Data.Time.PreciseDuration.Internal (unwrapPreciseDuration)
 
 data PreciseDateTime = PreciseDateTime DateTime Nanosecond
@@ -123,7 +122,7 @@ adjust pd (PreciseDateTime dt ns) = do
     msPrecDur = toMilliseconds nsPrecDur
     -- Truncate milliseconds to remove fractional nanoseconds.
     msPrecDurDec = truncated $ unwrapPreciseDuration msPrecDur
-    roundTripDurInt = unwrapPreciseDuration <<< toNanoseconds $ PDT.make.milliseconds msPrecDurDec
+    roundTripDurInt = unwrapPreciseDuration <<< toNanoseconds $ PD.make.milliseconds msPrecDurDec
 
     negative = nsPrecDurInt < zero
     nsDiff = nsPrecDurInt - roundTripDurInt
@@ -182,7 +181,7 @@ diff (PreciseDateTime dt0 (Nanosecond ns0)) (PreciseDateTime dt1 (Nanosecond ns1
   let Duration.Milliseconds msNum = DateTime.diff dt0 dt1
       nsNum = Int.toNumber (ns0 - ns1) + msNum * 1000000.0
   in
-    Nanoseconds (BigInt.fromNumber nsNum)
+    PD.unsafeNanoseconds (Decimal.fromNumber nsNum)
 
 toDateTimeLossy :: PreciseDateTime -> DateTime
 toDateTimeLossy (PreciseDateTime dt _) = dt
