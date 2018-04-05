@@ -14,6 +14,7 @@ module Data.Time.PreciseDuration
 
 import Prelude (($), (/), (<<<), (<>))
 
+import Data.BigInt (BigInt)
 import Data.BigInt as BigInt
 import Data.Decimal (Decimal)
 import Data.Decimal as Decimal
@@ -33,37 +34,34 @@ toString =
     Days d -> Decimal.toString d <> "d"
     Weeks d -> Decimal.toString d <> "w"
 
-unPreciseDuration :: PreciseDuration -> Decimal
-unPreciseDuration = case _ of
-  Nanoseconds d -> bigIntToDecimal d
-  Microseconds d -> d
-  Milliseconds d -> d
-  Seconds d -> d
-  Minutes d -> d
-  Hours d -> d
-  Days d -> d
-  Weeks d -> d
+-- | Returns the number of nanoseconds represented by this 'PreciseDuration'.
+unPreciseDuration :: PreciseDuration -> BigInt
+unPreciseDuration = toNanosecondsBI
 
 toNanoseconds :: PreciseDuration -> PreciseDuration
 toNanoseconds = Nanoseconds <<< toNanosecondsBI
 
+-- NB: We don't use 'toNanosecondsBI' in these conversion functions to avoid a
+-- roundtrip between the external 'Decimal' and 'BigInt' types. Instead, we will
+-- truncate the decimal to maintain the integral nanoseconds invariant.
+
 toMicroseconds :: PreciseDuration -> PreciseDuration
-toMicroseconds duration = Microseconds $ (toNanosecondsD duration) / micro
+toMicroseconds duration = Microseconds $ Decimal.truncated (toNanosecondsD duration) / micro
 
 toMilliseconds :: PreciseDuration -> PreciseDuration
-toMilliseconds duration = Milliseconds $ (toNanosecondsD duration) / milli
+toMilliseconds duration = Milliseconds $ Decimal.truncated (toNanosecondsD duration) / milli
 
 toSeconds :: PreciseDuration -> PreciseDuration
-toSeconds duration = Seconds $ (toNanosecondsD duration) / second
+toSeconds duration = Seconds $ Decimal.truncated (toNanosecondsD duration) / second
 
 toMinutes :: PreciseDuration -> PreciseDuration
-toMinutes duration = Minutes $ (toNanosecondsD duration) / minute
+toMinutes duration = Minutes $ Decimal.truncated (toNanosecondsD duration) / minute
 
 toHours :: PreciseDuration -> PreciseDuration
-toHours duration = Hours $ (toNanosecondsD duration) / hour
+toHours duration = Hours $ Decimal.truncated (toNanosecondsD duration) / hour
 
 toDays :: PreciseDuration -> PreciseDuration
-toDays duration = Days $ (toNanosecondsD duration) / day
+toDays duration = Days $ Decimal.truncated (toNanosecondsD duration) / day
 
 toWeeks :: PreciseDuration -> PreciseDuration
-toWeeks duration = Weeks $ (toNanosecondsD duration) / week
+toWeeks duration = Weeks $ Decimal.truncated (toNanosecondsD duration) / week
