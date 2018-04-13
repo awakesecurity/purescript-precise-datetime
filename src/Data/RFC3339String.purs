@@ -18,6 +18,7 @@ import Data.RFC3339String.Format (iso8601Format)
 import Data.String as String
 import Data.String.Regex (match, regex) as RE
 import Data.String.Regex.Flags (noFlags) as RE
+import Data.String.Regex.Unsafe (unsafeRegex) as RE
 import Data.Time.Duration (Hours(..), Minutes(..), convertDuration)
 import Data.Traversable (sequence)
 import Data.Tuple (Tuple(..), snd)
@@ -60,6 +61,11 @@ toLocale (RFC3339String s) = Locale Nothing $ fromMaybe zero $ unsafePartial $ d
   mins' <- readNum mins
   let offset = convertDuration (Hours hrs') + Minutes mins'
   pure $ (if sign == "-" then negate else id) offset
+
+stripLocale :: RFC3339String -> RFC3339String
+stripLocale (RFC3339String s) =
+  let re = RE.unsafeRegex "([-|\\+])(\\d\\d):?(\\d\\d)$" RE.noFlags
+  in RFC3339String (RE.replace re "Z" s)
 
 toDateTime :: RFC3339String -> Maybe DateTime
 toDateTime = JSDate.toDateTime <<< unsafeParse <<< unwrap

@@ -31,7 +31,7 @@ diff (LocalValue (Locale _ m1) pdt1) (LocalValue (Locale _ m2) pdt2) =
 fromRFC3339String :: RFC3339String -> Maybe LocalPreciseDateTime
 fromRFC3339String = do
   loc <- RFC3339String.toLocale
-  pdt <- PDT.fromRFC3339String
+  pdt <- PDT.fromRFC3339String <<< RFC3339String.stripLocale
   pure $ LocalValue loc <$> pdt
 
 toRFC3339String :: LocalPreciseDateTime -> RFC3339String
