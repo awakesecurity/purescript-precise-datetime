@@ -5,9 +5,9 @@ import Prelude
 import Data.DateTime as DateTime
 import Data.DateTime.Locale (Locale(..), LocalValue(..), LocalDateTime)
 import Data.Decimal as Decimal
-import Data.Maybe (Maybe, fromMaybe)
+import Data.Maybe (Maybe)
 import Data.Newtype (unwrap)
-import Data.PreciseDateTime (PreciseDateTime(..))
+import Data.PreciseDateTime (PreciseDateTime)
 import Data.PreciseDateTime as PDT
 import Data.RFC3339String (RFC3339String(..))
 import Data.RFC3339String as RFC3339String
@@ -32,13 +32,12 @@ diff (LocalValue (Locale _ m1) pdt1) (LocalValue (Locale _ m2) pdt2) =
 fromRFC3339String :: RFC3339String -> Maybe LocalPreciseDateTime
 fromRFC3339String = do
   loc <- RFC3339String.toLocale
-  pdt <- PDT.fromRFC3339String
+  pdt <- PDT.fromRFC3339String <<< RFC3339String.normLocale
   pure $ LocalValue loc <$> pdt
 
 toRFC3339String :: LocalPreciseDateTime -> RFC3339String
-toRFC3339String (LocalValue locale@(Locale _ offset) (PreciseDateTime dt ns)) =
+toRFC3339String (LocalValue locale pdt) =
   let
-    pdt = PreciseDateTime (fromMaybe dt (DateTime.adjust offset dt)) ns
     (RFC3339String s) = PDT.toRFC3339String pdt
   in
     RFC3339String $ dropRight 1 s <> formatLocale locale
