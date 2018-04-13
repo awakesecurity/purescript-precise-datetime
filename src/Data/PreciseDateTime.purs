@@ -31,7 +31,7 @@ import Data.String (Pattern(Pattern), drop, length, split, take, takeWhile)
 import Data.Time.Duration as Duration
 import Data.Time.PreciseDuration (PreciseDuration, toMilliseconds, toNanoseconds)
 import Data.Time.PreciseDuration as PD
-import Data.Time.PreciseDuration.Internal (unwrapPreciseDuration)
+import Data.Time.PreciseDuration.Internal (toDecimalLossy)
 
 data PreciseDateTime = PreciseDateTime DateTime Nanosecond
 
@@ -118,11 +118,11 @@ adjust :: PreciseDuration -> PreciseDateTime -> Maybe PreciseDateTime
 adjust pd (PreciseDateTime dt ns) = do
   let
     nsPrecDur = toNanoseconds pd
-    nsPrecDurInt = unwrapPreciseDuration nsPrecDur
+    nsPrecDurInt = toDecimalLossy nsPrecDur
     msPrecDur = toMilliseconds nsPrecDur
     -- Truncate milliseconds to remove fractional nanoseconds.
-    msPrecDurDec = truncated $ unwrapPreciseDuration msPrecDur
-    roundTripDurInt = unwrapPreciseDuration <<< toNanoseconds $ PD.milliseconds msPrecDurDec
+    msPrecDurDec = truncated $ toDecimalLossy msPrecDur
+    roundTripDurInt = toDecimalLossy <<< toNanoseconds $ PD.milliseconds msPrecDurDec
 
     negative = nsPrecDurInt < zero
     nsDiff = nsPrecDurInt - roundTripDurInt

@@ -39,6 +39,7 @@ toString = case _ of
 unsafeNanoseconds :: Decimal -> PreciseDuration
 unsafeNanoseconds = Nanoseconds
 
+-- Nanoseconds must be integral.
 nanoseconds :: Int -> PreciseDuration
 nanoseconds = Decimal.fromInt >>> Nanoseconds
 

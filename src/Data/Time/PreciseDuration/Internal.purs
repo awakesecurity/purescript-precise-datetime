@@ -10,6 +10,7 @@ import Data.Maybe (fromMaybe)
 
 data PreciseDuration
   = Nanoseconds Decimal
+  -- Nanoseconds must be integral, see smart constructor in Data.Time.PreciseDuration.
   | Microseconds Decimal
   | Milliseconds Decimal
   | Seconds Decimal
@@ -31,8 +32,8 @@ instance showPreciseDuration :: Show PreciseDuration where
   show (Days d) = "(Days " <> show d <> ")"
   show (Weeks d) = "(Weeks " <> show d <> ")"
 
-unwrapPreciseDuration :: PreciseDuration -> Decimal
-unwrapPreciseDuration = case _ of
+toDecimalLossy :: PreciseDuration -> Decimal
+toDecimalLossy = case _ of
   Nanoseconds d -> d
   Microseconds d -> d
   Milliseconds d -> d
