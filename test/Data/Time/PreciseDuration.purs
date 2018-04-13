@@ -23,7 +23,7 @@ test
   -> Decimal
   -> Array Decimal
   -> Aff r Unit
-test fn ctr div = traverse_ \(input :: Decimal) -> do
+test fn ctr div = traverse_ \input -> do
   -- do not feed fractional values into nanoseconds
   when (Decimal.isInteger input) $
     fn (PD.unsafeNanoseconds input) `shouldEqual` (ctr $ input * nano / div)

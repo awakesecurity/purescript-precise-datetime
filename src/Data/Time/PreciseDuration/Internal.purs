@@ -9,7 +9,7 @@ import Data.Decimal as Decimal
 import Data.Maybe (fromMaybe)
 
 data PreciseDuration
-  = Nanoseconds Decimal -- BigInt -- this is BigInt to prevent fractional nanoseconds
+  = Nanoseconds Decimal
   | Microseconds Decimal
   | Milliseconds Decimal
   | Seconds Decimal
@@ -51,17 +51,3 @@ minute = (second * Decimal.fromInt 60) :: Decimal
 hour   = (minute * Decimal.fromInt 60) :: Decimal
 day    = (hour * Decimal.fromInt 24) :: Decimal
 week   = (day * Decimal.fromInt 7) :: Decimal
-
--- Note: While toNanosecondsD can be defined in terms of toNanosecondsBI (and vice
--- versa), we do not do so in order to avoid converting between those types.
-
-toNanosecondsD :: PreciseDuration -> Decimal
-toNanosecondsD = case _ of
-  Nanoseconds d  -> d
-  Microseconds d -> d * micro
-  Milliseconds d -> d * milli
-  Seconds d      -> d * second
-  Minutes d      -> d * minute
-  Hours d        -> d * hour
-  Days d         -> d * day
-  Weeks d        -> d * week
