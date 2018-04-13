@@ -53,17 +53,20 @@ fromDateTime :: DateTime -> RFC3339String
 fromDateTime = trim <<< RFC3339String <<< format iso8601Format
 
 -- | Reads the locale, returning GMT (+0000) if not present.
-toLocale :: RFC3339String -> Locale
-toLocale (RFC3339String s) = Locale Nothing $ fromMaybe zero $ unsafePartial $ do
+-- Fails with 'Nothing' if the numbers specified are out of range.
+toLocale :: RFC3339String -> Maybe Locale
+toLocale (RFC3339String s) = unsafePartial $ Locale Nothing <$> do
   re <- hush $ RE.regex "([-|\\+])(\\d\\d):?(\\d\\d)$" RE.noFlags
-  [_, sign, hrs, mins] <- sequence =<< RE.match re s
-  let readNum = map toNumber <<< fromString
-  hrs' <- readNum hrs
-  mins' <- readNum mins
-  guard $ zero <= hrs' && hrs' <= 24.0
-  guard $ if hrs' == 24.0 then mins' == zero else zero <= mins' && mins' <= 59.0
-  let offset = convertDuration (Hours hrs') + Minutes mins'
-  pure $ (if sign == "-" then negate else id) offset
+  case sequence =<< RE.match re s of
+    Nothing -> pure zero -- GMT
+    Just [_, sign, hrs, mins] -> do
+      let readNum = map toNumber <<< fromString
+      hrs' <- readNum hrs
+      mins' <- readNum mins
+      guard $ zero <= hrs' && hrs' <= 24.0
+      guard $ if hrs' == 24.0 then mins' == zero else zero <= mins' && mins' <= 59.0
+      let offset = convertDuration (Hours hrs') + Minutes mins'
+      pure $ (if sign == "-" then negate else id) offset
 
 -- | Normalise the locale to GMT.
 normLocale :: RFC3339String -> RFC3339String

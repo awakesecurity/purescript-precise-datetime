@@ -33,7 +33,7 @@ fromRFC3339String :: RFC3339String -> Maybe LocalPreciseDateTime
 fromRFC3339String = do
   loc <- RFC3339String.toLocale
   pdt <- PDT.fromRFC3339String <<< RFC3339String.normLocale
-  pure $ LocalValue loc <$> pdt
+  pure $ LocalValue <$> loc <*> pdt
 
 toRFC3339String :: LocalPreciseDateTime -> RFC3339String
 toRFC3339String (LocalValue locale pdt) =
