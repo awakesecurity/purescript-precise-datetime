@@ -59,6 +59,8 @@ toLocale (RFC3339String s) = Locale Nothing $ fromMaybe zero $ unsafePartial $ d
   let readNum = map toNumber <<< fromString
   hrs' <- readNum hrs
   mins' <- readNum mins
+  guard $ 0 <= hrs' && hrs' <= 24
+  guard $ if hrs' == 24 then mins' == 0 else 0 <= mins' && mins' <= 59
   let offset = convertDuration (Hours hrs') + Minutes mins'
   pure $ (if sign == "-" then negate else id) offset
 
