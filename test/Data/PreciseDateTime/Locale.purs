@@ -51,4 +51,18 @@ spec =
         `shouldEqual` RFC3339String (dateStringFixture <>".0Z")
 
       toRFC3339String (LocalValue (Locale Nothing (Dur.convertDuration (Dur.Hours 4.0))) (preciseDateTimeFixture 0 0))
-        `shouldEqual` RFC3339String (dateStringFixture <>".0+04:00")
+        `shouldEqual` RFC3339String ("1985-03-13T16:34:56.0+04:00")
+
+    it "Round Trip RFC3339String" do
+      let roundtrip rfcStr = let go = map toRFC3339String <<< fromRFC3339String
+                             in (Just rfcStr) `shouldEqual` go rfcStr
+
+      -- these tests are a bit finnicky because of how we normalise the RFC3339 representation,
+      -- eg. an input offset of '+00:00' gets printed as 'Z'
+      roundtrip (RFC3339String $ dateStringFixture <> ".0+08:00")
+
+      roundtrip (RFC3339String $ dateStringFixture <> ".0-08:00")
+
+      roundtrip (RFC3339String $ dateStringFixture <> ".0Z")
+
+      roundtrip (RFC3339String $ dateStringFixture <> ".0-00:01")
