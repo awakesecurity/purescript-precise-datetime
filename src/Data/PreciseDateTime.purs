@@ -122,7 +122,7 @@ adjust pd (PreciseDateTime dt ns) = do
     msPrecDur = toMilliseconds nsPrecDur
     -- Truncate milliseconds to remove fractional nanoseconds.
     msPrecDurDec = truncated $ unwrapPreciseDuration msPrecDur
-    roundTripDurInt = unwrapPreciseDuration <<< toNanoseconds $ PD.make.milliseconds msPrecDurDec
+    roundTripDurInt = unwrapPreciseDuration <<< toNanoseconds $ PD.milliseconds msPrecDurDec
 
     negative = nsPrecDurInt < zero
     nsDiff = nsPrecDurInt - roundTripDurInt

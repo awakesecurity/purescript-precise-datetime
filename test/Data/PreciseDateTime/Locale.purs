@@ -18,10 +18,10 @@ import Test.Spec.Assertions (shouldEqual)
 
 withTZ :: Int -> PreciseDateTime -> Maybe (LocalValue PreciseDateTime)
 withTZ hrsTZ = map (LocalValue (Locale Nothing (Dur.convertDuration (Dur.Hours (toNumber hrsTZ)))))
-               <<< PDT.adjust (PD.make.hours (fromInt (negate hrsTZ)))
+               <<< PDT.adjust (PD.hours (fromInt (negate hrsTZ)))
 withTZMins :: Int -> PreciseDateTime -> Maybe (LocalValue PreciseDateTime)
 withTZMins minsTZ = map (LocalValue (Locale Nothing (Dur.convertDuration (Dur.Minutes (toNumber minsTZ)))))
-               <<< PDT.adjust (PD.make.minutes (fromInt (negate minsTZ)))
+               <<< PDT.adjust (PD.minutes (fromInt (negate minsTZ)))
 
 spec :: forall r. Spec r Unit
 spec =

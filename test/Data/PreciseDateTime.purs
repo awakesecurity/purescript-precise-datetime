@@ -10,7 +10,7 @@ import Data.Newtype (class Newtype)
 import Data.PreciseDateTime (PreciseDateTime(..), adjust, diff, fromRFC3339String, toRFC3339String)
 import Data.RFC3339String (RFC3339String(..))
 import Data.Time.PreciseDuration (PreciseDuration)
-import Data.Time.PreciseDuration (make, unsafeNanoseconds) as PD
+import Data.Time.PreciseDuration as PD
 import Partial.Unsafe (unsafePartial)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
@@ -96,37 +96,37 @@ spec =
 
     it "diff" do
       diff (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
-        `shouldEqual` (PD.make.nanoseconds 0)
+        `shouldEqual` (PD.nanoseconds 0)
 
       diff (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 1) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
-        `shouldEqual` (PD.make.nanoseconds 1)
+        `shouldEqual` (PD.nanoseconds 1)
 
       diff (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 1)
-        `shouldEqual` (PD.make.nanoseconds (-1))
+        `shouldEqual` (PD.nanoseconds (-1))
 
       diff (mkPreciseDateTime 1985 Date.March 12 23 59 59 999 999999) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
-        `shouldEqual` (PD.make.nanoseconds (-1))
+        `shouldEqual` (PD.nanoseconds (-1))
 
       diff (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0) (mkPreciseDateTime 1985 Date.March 12 23 59 59 999 999999)
-        `shouldEqual` (PD.make.nanoseconds 1)
+        `shouldEqual` (PD.nanoseconds 1)
 
       diff (mkPreciseDateTime 1985 Date.March 12 23 59 59 999 0) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
-        `shouldEqual` (PD.make.nanoseconds (-1000000))
+        `shouldEqual` (PD.nanoseconds (-1000000))
 
       diff (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0) (mkPreciseDateTime 1985 Date.March 12 23 59 59 999 0)
-        `shouldEqual` (PD.make.nanoseconds 1000000)
+        `shouldEqual` (PD.nanoseconds 1000000)
 
       diff (mkPreciseDateTime 1985 Date.March 13 0 0 1 0 1) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
-        `shouldEqual` (PD.make.nanoseconds 1000000001)
+        `shouldEqual` (PD.nanoseconds 1000000001)
 
       diff (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0) (mkPreciseDateTime 1985 Date.March 13 0 0 1 0 1)
-        `shouldEqual` (PD.make.nanoseconds (-1000000001))
+        `shouldEqual` (PD.nanoseconds (-1000000001))
 
       diff (mkPreciseDateTime 1985 Date.March 12 23 59 58 999 999999) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
-        `shouldEqual` (PD.make.nanoseconds (-1000000001))
+        `shouldEqual` (PD.nanoseconds (-1000000001))
 
       diff (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0) (mkPreciseDateTime 1985 Date.March 12 23 59 58 999 999999)
-        `shouldEqual` (PD.make.nanoseconds 1000000001)
+        `shouldEqual` (PD.nanoseconds 1000000001)
 
       diff (mkPreciseDateTime 1985 Date.March 20 0 0 0 0 1) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (PD.unsafeNanoseconds <<< unsafePartial fromJust <<< fromString $ "604800000000001")
@@ -136,85 +136,85 @@ spec =
 
 
     it "adjust" do
-      adjust (PD.make.nanoseconds 0) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+      adjust (PD.nanoseconds 0) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
 
-      adjust (PD.make.nanoseconds 1) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+      adjust (PD.nanoseconds 1) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 13 0 0 0 0 1)
 
-      adjust (PD.make.nanoseconds (-1)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+      adjust (PD.nanoseconds (-1)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 12 23 59 59 999 999999)
 
-      adjust (PD.make.nanoseconds 1000000) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+      adjust (PD.nanoseconds 1000000) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 13 0 0 0 1 0)
 
-      adjust(PD.make.nanoseconds (-1000000)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+      adjust(PD.nanoseconds (-1000000)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 12 23 59 59 999 0)
 
-      adjust (PD.make.nanoseconds 10000000) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+      adjust (PD.nanoseconds 10000000) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 13 0 0 0 10 0)
 
-      adjust (PD.make.nanoseconds (-10000000)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+      adjust (PD.nanoseconds (-10000000)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 12 23 59 59 990 0)
 
-      adjust (PD.make.nanoseconds 100000000) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+      adjust (PD.nanoseconds 100000000) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 13 0 0 0 100 0)
 
-      adjust (PD.make.nanoseconds (-100000000)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+      adjust (PD.nanoseconds (-100000000)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 12 23 59 59 900 0)
 
-      adjust (PD.make.nanoseconds 123456789) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+      adjust (PD.nanoseconds 123456789) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 13 0 0 0 123 456789)
 
-      adjust (PD.make.nanoseconds (-123456789)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+      adjust (PD.nanoseconds (-123456789)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 12 23 59 59 876 543211)
 
-      adjust (PD.make.nanoseconds 999999999) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+      adjust (PD.nanoseconds 999999999) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 13 0 0 0 999 999999)
 
-      adjust (PD.make.nanoseconds (-999999999)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+      adjust (PD.nanoseconds (-999999999)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 12 23 59 59 0 1)
 
-      adjust (PD.make.nanoseconds 1000000000) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+      adjust (PD.nanoseconds 1000000000) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 13 0 0 1 0 0)
 
-      adjust (PD.make.nanoseconds (-1000000000)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+      adjust (PD.nanoseconds (-1000000000)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 12 23 59 59 0 0)
 
-      adjust (PD.make.nanoseconds 1000000001) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+      adjust (PD.nanoseconds 1000000001) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 13 0 0 1 0 1)
 
-      adjust (PD.make.nanoseconds (-1000000001)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+      adjust (PD.nanoseconds (-1000000001)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 12 23 59 58 999 999999)
 
-      adjust (PD.make.nanoseconds (-1000000002)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+      adjust (PD.nanoseconds (-1000000002)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 12 23 59 58 999 999998)
 
-      adjust (PD.make.nanoseconds 1000000010) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+      adjust (PD.nanoseconds 1000000010) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 13 0 0 1 0 10)
 
-      adjust (PD.make.nanoseconds (-1000000010)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+      adjust (PD.nanoseconds (-1000000010)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 12 23 59 58 999 999990)
 
-      adjust (PD.make.nanoseconds 1000000100) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+      adjust (PD.nanoseconds 1000000100) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 13 0 0 1 0 100)
 
-      adjust (PD.make.nanoseconds (-1000000100)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+      adjust (PD.nanoseconds (-1000000100)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 12 23 59 58 999 999900)
 
-      adjust (PD.make.nanoseconds (-1000001000)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+      adjust (PD.nanoseconds (-1000001000)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 12 23 59 58 999 999000)
 
-      adjust (PD.make.nanoseconds (-1000010000)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+      adjust (PD.nanoseconds (-1000010000)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 12 23 59 58 999 990000)
 
-      adjust (PD.make.nanoseconds (-1000100000)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+      adjust (PD.nanoseconds (-1000100000)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 12 23 59 58 999 900000)
 
-      adjust (PD.make.nanoseconds (-1001000000)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+      adjust (PD.nanoseconds (-1001000000)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 12 23 59 58 999 0)
 
-      adjust (PD.make.nanoseconds (-1010000000)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+      adjust (PD.nanoseconds (-1010000000)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 12 23 59 58 990 0)
 
       adjust (PD.unsafeNanoseconds <<< unsafePartial fromJust <<< fromString $ "-10000000000") (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
