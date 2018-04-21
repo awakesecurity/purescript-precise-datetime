@@ -79,10 +79,6 @@ unPreciseDuration = case _ of
 toNanoseconds :: PreciseDuration -> PreciseDuration
 toNanoseconds = Nanoseconds <<< unPreciseDuration
 
--- NB: We don't use 'toNanosecondsBI' in these conversion functions to avoid a
--- roundtrip between the external 'Decimal' and 'BigInt' types. Instead, we will
--- truncate the decimal to maintain the integral nanoseconds invariant.
-
 toMicroseconds :: PreciseDuration -> PreciseDuration
 toMicroseconds duration = Microseconds $ (Decimal.truncated (unPreciseDuration duration)) / micro
 
