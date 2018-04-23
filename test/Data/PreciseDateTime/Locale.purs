@@ -11,7 +11,7 @@ import Data.PreciseDateTime as PDT
 import Data.PreciseDateTime.Locale (fromRFC3339String, toRFC3339String)
 import Data.RFC3339String (RFC3339String(..))
 import Data.Time.Duration as Dur
-import Data.Time.PreciseDuration (PreciseDuration(..))
+import Data.Time.PreciseDuration as PD
 import Test.Data.PreciseDateTime.Spec (dateStringFixture, preciseDateTimeFixture)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)

@@ -9,7 +9,8 @@ import Data.Decimal as Decimal
 import Data.Maybe (fromMaybe)
 
 data PreciseDuration
-  = Nanoseconds BigInt -- this is BigInt to prevent fractional nanoseconds
+  = Nanoseconds Decimal
+  -- Nanoseconds must be integral, see smart constructor in Data.Time.PreciseDuration.
   | Microseconds Decimal
   | Milliseconds Decimal
   | Seconds Decimal
@@ -31,37 +32,23 @@ instance showPreciseDuration :: Show PreciseDuration where
   show (Days d) = "(Days " <> show d <> ")"
   show (Weeks d) = "(Weeks " <> show d <> ")"
 
+toDecimalLossy :: PreciseDuration -> Decimal
+toDecimalLossy = case _ of
+  Nanoseconds d -> d
+  Microseconds d -> d
+  Milliseconds d -> d
+  Seconds d -> d
+  Minutes d -> d
+  Hours d -> d
+  Days d -> d
+  Weeks d -> d
+
 -- Each duration in nanoseconds
-nano = Decimal.fromInt 1 :: Decimal
-micro = (nano * Decimal.fromInt 1000) :: Decimal
-milli = (micro * Decimal.fromInt 1000) :: Decimal
+nano   = Decimal.fromInt 1 :: Decimal
+micro  = (nano * Decimal.fromInt 1000) :: Decimal
+milli  = (micro * Decimal.fromInt 1000) :: Decimal
 second = (milli * Decimal.fromInt 1000) :: Decimal
 minute = (second * Decimal.fromInt 60) :: Decimal
-hour = (minute * Decimal.fromInt 60) :: Decimal
-day = (hour * Decimal.fromInt 24) :: Decimal
-week = (day * Decimal.fromInt 7) :: Decimal
-
-bigIntToDecimal :: BigInt -> Decimal
-bigIntToDecimal = fromMaybe zero -- the conversion should never fail
-                  <<< Decimal.fromString <<< BigInt.toString
-
-decimalToBigInt :: Decimal -> BigInt
-decimalToBigInt = fromMaybe zero -- the conversion should never fail
-                  <<< BigInt.fromString <<< Decimal.toString
-
-toNanosecondsD :: PreciseDuration -> Decimal
-toNanosecondsD =
-  case _ of
-    Nanoseconds d -> bigIntToDecimal d
-    Microseconds d -> d * micro
-    Milliseconds d -> d * milli
-    Seconds d -> d * second
-    Minutes d -> d * minute
-    Hours d -> d * hour
-    Days d -> d * day
-    Weeks d -> d * week
-
-toNanosecondsBI :: PreciseDuration -> BigInt
-toNanosecondsBI = case _ of
-  Nanoseconds d -> d
-  other         -> decimalToBigInt $ toNanosecondsD other
+hour   = (minute * Decimal.fromInt 60) :: Decimal
+day    = (hour * Decimal.fromInt 24) :: Decimal
+week   = (day * Decimal.fromInt 7) :: Decimal

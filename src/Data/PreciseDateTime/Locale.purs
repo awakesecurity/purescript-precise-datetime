@@ -13,7 +13,9 @@ import Data.RFC3339String (RFC3339String(..))
 import Data.RFC3339String as RFC3339String
 import Data.RFC3339String.Format (formatLocale)
 import Data.String (dropRight)
-import Data.Time.PreciseDuration (PreciseDuration(..), toNanoseconds)
+import Data.Time.PreciseDuration (PreciseDuration)
+import Data.Time.PreciseDuration as PD
+import Data.Time.PreciseDuration.Internal as PD
 import Data.Traversable (traverse)
 import Partial.Unsafe (unsafePartial)
 
@@ -25,9 +27,9 @@ adjust = traverse <<< PDT.adjust
 diff :: LocalPreciseDateTime -> LocalPreciseDateTime -> PreciseDuration
 diff (LocalValue (Locale _ m1) pdt1) (LocalValue (Locale _ m2) pdt2) =
   unsafePartial $
-  let Nanoseconds offsetDiff = toNanoseconds (Minutes (Decimal.fromNumber (unwrap (m1 - m2))))
-      Nanoseconds dtDiff = toNanoseconds (PDT.diff pdt1 pdt2)
-  in Nanoseconds (offsetDiff + dtDiff)
+  let offsetDiff = PD.toDecimalLossy (PD.toNanoseconds (PD.minutes (Decimal.fromNumber (unwrap (m1 - m2)))))
+      dtDiff = PD.toDecimalLossy (PD.toNanoseconds (PDT.diff pdt1 pdt2))
+  in PD.unsafeNanoseconds (offsetDiff + dtDiff)
 
 fromRFC3339String :: RFC3339String -> Maybe LocalPreciseDateTime
 fromRFC3339String = do
