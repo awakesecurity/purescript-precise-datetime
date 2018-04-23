@@ -17,7 +17,6 @@ import Data.Time.PreciseDuration (PreciseDuration)
 import Data.Time.PreciseDuration as PD
 import Data.Time.PreciseDuration.Internal as PD
 import Data.Traversable (traverse)
-import Partial.Unsafe (unsafePartial)
 
 type LocalPreciseDateTime = LocalValue PreciseDateTime
 
@@ -26,7 +25,6 @@ adjust = traverse <<< PDT.adjust
 
 diff :: LocalPreciseDateTime -> LocalPreciseDateTime -> PreciseDuration
 diff (LocalValue (Locale _ m1) pdt1) (LocalValue (Locale _ m2) pdt2) =
-  unsafePartial $
   let offsetDiff = PD.toDecimalLossy (PD.toNanoseconds (PD.minutes (Decimal.fromNumber (unwrap (m1 - m2)))))
       dtDiff = PD.toDecimalLossy (PD.toNanoseconds (PDT.diff pdt1 pdt2))
   in PD.unsafeNanoseconds (offsetDiff + dtDiff)
