@@ -39,7 +39,8 @@ data PreciseDuration
   | Days Decimal
   | Weeks Decimal
 
-derive instance eqPreciseDuration :: Eq PreciseDuration
+instance eqPreciseDuration :: Eq PreciseDuration where
+  eq x y = compare x y == EQ
 
 instance ordPreciseDuration :: Ord PreciseDuration where
   compare x y = compare (toNanoseconds x) (toNanoseconds y)
