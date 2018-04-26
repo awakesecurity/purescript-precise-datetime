@@ -43,6 +43,7 @@ instance eqPreciseDuration :: Eq PreciseDuration where
   eq x y = compare x y == EQ
 
 instance ordPreciseDuration :: Ord PreciseDuration where
+  compare (Nanoseconds x) (Nanoseconds y) = compare x y
   compare x y = compare (toNanoseconds x) (toNanoseconds y)
 
 instance showPreciseDuration :: Show PreciseDuration where
