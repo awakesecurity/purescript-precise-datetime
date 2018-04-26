@@ -68,9 +68,9 @@ toLocale (RFC3339String s) = unsafePartial $ Locale Nothing <$> do
       let offset = convertDuration (Hours hrs') + Minutes mins'
       pure $ (if sign == "-" then negate else id) offset
 
--- | Normalise the locale to GMT.
-normLocale :: RFC3339String -> RFC3339String
-normLocale (RFC3339String s) =
+-- | Strips the locale, normalising it to GMT.
+removeLocale :: RFC3339String -> RFC3339String
+removeLocale (RFC3339String s) =
   let re = RE.unsafeRegex "([-|\\+])(\\d\\d):?(\\d\\d)$" RE.noFlags
   in RFC3339String (RE.replace re "Z" s)
 
