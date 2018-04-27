@@ -29,9 +29,8 @@ import Data.RFC3339String (RFC3339String(..), trim)
 import Data.RFC3339String as RFC3339String
 import Data.String (Pattern(Pattern), drop, length, split, take, takeWhile)
 import Data.Time.Duration as Duration
-import Data.Time.PreciseDuration (PreciseDuration, toMilliseconds, toNanoseconds)
+import Data.Time.PreciseDuration (PreciseDuration, toDecimalLossy, toMilliseconds, toNanoseconds)
 import Data.Time.PreciseDuration as PD
-import Data.Time.PreciseDuration.Internal (toDecimalLossy)
 
 data PreciseDateTime = PreciseDateTime DateTime Nanosecond
 
