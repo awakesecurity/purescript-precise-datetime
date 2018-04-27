@@ -2,7 +2,6 @@ module Data.PreciseDateTime.Locale where
 
 import Prelude
 
-import Data.DateTime as DateTime
 import Data.DateTime.Locale (Locale(..), LocalValue(..), LocalDateTime)
 import Data.Decimal as Decimal
 import Data.Maybe (Maybe)
@@ -15,7 +14,6 @@ import Data.RFC3339String.Format (formatLocale)
 import Data.String (dropRight)
 import Data.Time.PreciseDuration (PreciseDuration)
 import Data.Time.PreciseDuration as PD
-import Data.Time.PreciseDuration.Internal as PD
 import Data.Traversable (traverse)
 
 type LocalPreciseDateTime = LocalValue PreciseDateTime
