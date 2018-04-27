@@ -1,13 +1,13 @@
 module Test.Data.Time.PreciseDuration.Spec where
 
-import Data.Time.PreciseDuration (PreciseDuration(..), toDays, toHours, toMicroseconds, toMilliseconds, toMinutes, toNanoseconds, toSeconds, toWeeks)
-import Data.Time.PreciseDuration as PD
-import Data.Time.PreciseDuration.Internal (day, hour, micro, milli, minute, nano, second, week)
-import Prelude (Unit, discard, when, ($), (*), (/), (<<<))
+import Prelude
+
 import Control.Monad.Aff (Aff)
 import Data.Decimal (Decimal)
 import Data.Decimal as Decimal
 import Data.Maybe (fromJust)
+import Data.Time.PreciseDuration (PreciseDuration, day, hour, micro, milli, minute, nano, second, toDays, toHours, toMicroseconds, toMilliseconds, toMinutes, toNanoseconds, toSeconds, toWeeks, week)
+import Data.Time.PreciseDuration as PD
 import Data.Traversable (traverse_)
 import Partial.Unsafe (unsafePartial)
 import Test.Spec (Spec, describe, it)
