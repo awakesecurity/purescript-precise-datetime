@@ -109,27 +109,35 @@ unPreciseDuration = case _ of
 
 -- Conversions
 toNanoseconds :: PreciseDuration -> PreciseDuration
-toNanoseconds = Nanoseconds <<< unPreciseDuration
+toNanoseconds ns@(Nanoseconds _) = ns
+toNanoseconds duration = Nanoseconds (unPreciseDuration duration)
 
 toMicroseconds :: PreciseDuration -> PreciseDuration
+toMicroseconds us@(Microseconds _) = us
 toMicroseconds duration = Microseconds $ (Decimal.truncated (unPreciseDuration duration)) / micro
 
 toMilliseconds :: PreciseDuration -> PreciseDuration
+toMilliseconds ms@(Milliseconds _) = ms
 toMilliseconds duration = Milliseconds $ (Decimal.truncated (unPreciseDuration duration)) / milli
 
 toSeconds :: PreciseDuration -> PreciseDuration
+toSeconds s@(Seconds _) = s
 toSeconds duration = Seconds $ (Decimal.truncated (unPreciseDuration duration)) / second
 
 toMinutes :: PreciseDuration -> PreciseDuration
+toMinutes mins@(Minutes _) = mins
 toMinutes duration = Minutes $ (Decimal.truncated (unPreciseDuration duration)) / minute
 
 toHours :: PreciseDuration -> PreciseDuration
+toHours hours@(Hours _) = hours
 toHours duration = Hours $ (Decimal.truncated (unPreciseDuration duration)) / hour
 
 toDays :: PreciseDuration -> PreciseDuration
+toDays days@(Days _) = days
 toDays duration = Days $ (Decimal.truncated (unPreciseDuration duration)) / day
 
 toWeeks :: PreciseDuration -> PreciseDuration
+toWeeks weeks@(Weeks _) = weeks
 toWeeks duration = Weeks $ (Decimal.truncated (unPreciseDuration duration)) / week
 
 toDecimalLossy :: PreciseDuration -> Decimal
