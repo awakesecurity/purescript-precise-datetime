@@ -1,5 +1,5 @@
 module Data.Time.PreciseDuration
-  ( PreciseDuration
+  ( PreciseDuration(..)
   , toString
   , nanoseconds, microseconds, milliseconds, seconds, minutes, hours, days, weeks
   , unsafeNanoseconds
