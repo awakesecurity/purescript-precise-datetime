@@ -1,6 +1,7 @@
 module Data.Time.PreciseDuration
-  ( PreciseDuration(..)
+  ( PreciseDuration
   , toString
+  , negatePreciseDuration
   , nanoseconds, microseconds, milliseconds, seconds, minutes, hours, days, weeks
   , unsafeNanoseconds
   , unPreciseDuration
@@ -66,6 +67,17 @@ toString = case _ of
   Hours d -> Decimal.toString d <> "h"
   Days d -> Decimal.toString d <> "d"
   Weeks d -> Decimal.toString d <> "w"
+
+negatePreciseDuration :: PreciseDuration -> PreciseDuration
+negatePreciseDuration = case _ of
+  Nanoseconds   x -> Nanoseconds   (negate x)
+  Microseconds  x -> Microseconds  (negate x)
+  Milliseconds  x -> Milliseconds  (negate x)
+  Seconds       x -> Seconds       (negate x)
+  Minutes       x -> Minutes       (negate x)
+  Hours         x -> Hours         (negate x)
+  Days          x -> Days          (negate x)
+  Weeks         x -> Weeks         (negate x)
 
 -- Smart constructors
 unsafeNanoseconds :: Decimal -> PreciseDuration
