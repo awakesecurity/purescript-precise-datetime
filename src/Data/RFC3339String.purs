@@ -2,26 +2,17 @@ module Data.RFC3339String where
 
 import Prelude
 
-import Control.MonadZero (guard)
 import Data.DateTime (DateTime)
-import Data.DateTime.Locale (Locale(..))
-import Data.Either (hush)
 import Data.Foldable (foldr)
 import Data.Formatter.DateTime (format)
-import Data.Int (fromString, toNumber)
-import Data.JSDate (JSDate, LOCALE)
+import Data.JSDate (JSDate)
 import Data.JSDate as JSDate
-import Data.Maybe (Maybe(..), fromMaybe)
+import Data.Maybe (Maybe)
 import Data.Newtype (class Newtype, unwrap)
 import Data.RFC3339String.Format (iso8601Format)
-import Data.String as String
-import Data.String.Regex (match, regex, replace) as RE
-import Data.String.Regex.Flags (noFlags) as RE
-import Data.String.Regex.Unsafe (unsafeRegex) as RE
-import Data.Time.Duration (Hours(..), Minutes(..), convertDuration)
-import Data.Traversable (sequence)
+import Data.String.CodeUnits as String
 import Data.Tuple (Tuple(..), snd)
-import Partial.Unsafe (unsafePartial)
+import Effect.Unsafe (unsafePerformEffect)
 
 newtype RFC3339String = RFC3339String String
 
@@ -50,28 +41,6 @@ trim (RFC3339String s) =
 fromDateTime :: DateTime -> RFC3339String
 fromDateTime = trim <<< RFC3339String <<< format iso8601Format
 
--- | Reads the locale, returning GMT (+0000) if not present.
--- Fails with 'Nothing' if the numbers specified are out of range.
-toLocale :: RFC3339String -> Maybe Locale
-toLocale (RFC3339String s) = unsafePartial $ Locale Nothing <$> do
-  re <- hush $ RE.regex "([-|\\+])(\\d\\d):?(\\d\\d)$" RE.noFlags
-  case sequence =<< RE.match re s of
-    Nothing -> pure zero -- GMT
-    Just [_, sign, hrs, mins] -> do
-      let readNum = map toNumber <<< fromString
-      hrs' <- readNum hrs
-      mins' <- readNum mins
-      guard $ zero <= hrs' && hrs' <= 24.0
-      guard $ if hrs' == 24.0 then mins' == zero else zero <= mins' && mins' <= 59.0
-      let offset = convertDuration (Hours hrs') + Minutes mins'
-      pure $ (if sign == "-" then negate else id) offset
-
--- | Strips the locale, normalising it to GMT.
-setLocaleToZ :: RFC3339String -> RFC3339String
-setLocaleToZ (RFC3339String s) =
-  let re = RE.unsafeRegex "([-|\\+])(\\d\\d):?(\\d\\d)$" RE.noFlags
-  in RFC3339String (RE.replace re "Z" s)
-
 toDateTime :: RFC3339String -> Maybe DateTime
 toDateTime = JSDate.toDateTime <<< unsafeParse <<< unwrap
   where
@@ -80,7 +49,7 @@ toDateTime = JSDate.toDateTime <<< unsafeParse <<< unwrap
   -- | See https://github.com/purescript-contrib/purescript-js-date/issues/15
   -- | for why this is "unsafe".
   unsafeParse :: String -> JSDate
-  unsafeParse = runPure <<< JSDate.parse
+  unsafeParse = unsafePerformEffect <<< JSDate.parse
 
 -- | Returns the prefix remaining after dropping characters that satisfy the
 -- | predicate from the end of the string.
