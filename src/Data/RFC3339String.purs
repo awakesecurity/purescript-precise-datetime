@@ -3,8 +3,6 @@ module Data.RFC3339String where
 import Prelude
 
 import Control.MonadZero (guard)
-import Control.Monad.Eff (Eff, runPure)
-import Control.Monad.Eff.Unsafe (unsafeCoerceEff)
 import Data.DateTime (DateTime)
 import Data.DateTime.Locale (Locale(..))
 import Data.Either (hush)
@@ -77,15 +75,12 @@ setLocaleToZ (RFC3339String s) =
 toDateTime :: RFC3339String -> Maybe DateTime
 toDateTime = JSDate.toDateTime <<< unsafeParse <<< unwrap
   where
-  coerceJSDate :: Eff (locale :: LOCALE) JSDate -> Eff () JSDate
-  coerceJSDate = unsafeCoerceEff
-
   -- | Parse a `String` that is known to specify a time zone.
   -- |
   -- | See https://github.com/purescript-contrib/purescript-js-date/issues/15
   -- | for why this is "unsafe".
   unsafeParse :: String -> JSDate
-  unsafeParse = runPure <<< coerceJSDate <<< JSDate.parse
+  unsafeParse = runPure <<< JSDate.parse
 
 -- | Returns the prefix remaining after dropping characters that satisfy the
 -- | predicate from the end of the string.

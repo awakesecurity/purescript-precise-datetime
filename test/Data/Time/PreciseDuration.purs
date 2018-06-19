@@ -2,13 +2,13 @@ module Test.Data.Time.PreciseDuration.Spec where
 
 import Prelude
 
-import Control.Monad.Aff (Aff)
 import Data.Decimal (Decimal)
 import Data.Decimal as Decimal
 import Data.Maybe (fromJust)
 import Data.Time.PreciseDuration (PreciseDuration, day, hour, micro, milli, minute, nano, second, toDays, toHours, toMicroseconds, toMilliseconds, toMinutes, toNanoseconds, toSeconds, toWeeks, week)
 import Data.Time.PreciseDuration as PD
 import Data.Traversable (traverse_)
+import Effect.Aff (Aff)
 import Partial.Unsafe (unsafePartial)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
@@ -22,7 +22,7 @@ test
   -> (Decimal -> PreciseDuration)
   -> Decimal
   -> Array Decimal
-  -> Aff r Unit
+  -> Aff Unit
 test fn ctr div = traverse_ \input -> do
   -- do not feed fractional values into nanoseconds
   when (Decimal.isInteger input) $
