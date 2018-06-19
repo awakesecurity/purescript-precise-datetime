@@ -34,7 +34,7 @@ derive instance eqSecondsAndNanos :: Eq SecondsAndNanos
 instance showSecondsAndNanos :: Show SecondsAndNanos where
   show (SecondsAndNanos { seconds, nanos }) = "{ seconds: " <> show seconds <> ", nanos: " <> show nanos <> " }"
 
-spec :: forall r. Spec r Unit
+spec :: Spec Unit
 spec =
   describe "PreciseDateTime" do
     it "fromRFC3339String" do

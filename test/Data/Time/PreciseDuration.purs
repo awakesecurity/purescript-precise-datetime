@@ -17,8 +17,7 @@ unsafeFromString :: String -> Decimal
 unsafeFromString = unsafePartial fromJust <<< Decimal.fromString
 
 test
-  :: forall r
-   . (PreciseDuration -> PreciseDuration)
+  :: (PreciseDuration -> PreciseDuration)
   -> (Decimal -> PreciseDuration)
   -> Decimal
   -> Array Decimal
@@ -34,7 +33,7 @@ test fn ctr div = traverse_ \input -> do
   fn (PD.hours input) `shouldEqual` (ctr $ input * hour / div)
   fn (PD.weeks input) `shouldEqual` (ctr $ input * week / div)
 
-spec :: forall r. Spec r Unit
+spec :: Spec Unit
 spec =
   describe "PreciseDuration" do
     let inputs = [ unsafeFromString "123456789", unsafeFromString "0.5" ]
