@@ -30,7 +30,7 @@
     "purescript-tuples": "^5.0.0",
     "purescript-unicode": "^4.0.0",
     "purescript-numbers": "^6.0.0",
-    "purescript-decimals": "sharkdp/purescript-decimals#8ad1954ccd6cc4cbbca76e5772f802e12c387ce8"
+    "purescript-decimals": "^4.0.0"
   },
   "devDependencies": {
     "purescript-psci-support": "^4.0.0",
