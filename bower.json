@@ -19,7 +19,7 @@
     "purescript-either": "^4.0.0",
     "purescript-enums": "^4.0.0",
     "purescript-foldable-traversable": "^4.0.0",
-    "purescript-formatters": "slamdata/purescript-formatters#ee2a7e93dd124a71e188a75b002289bfffe4618e",
+    "purescript-formatters": "^4.0.0",
     "purescript-integers": "^4.0.0",
     "purescript-js-date": "^6.0.0",
     "purescript-lists": "^5.0.0",
