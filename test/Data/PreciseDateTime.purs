@@ -2,14 +2,13 @@ module Test.Data.PreciseDateTime.Spec where
 
 import Prelude
 
-import Data.Decimal (fromInt, fromString)
+import Data.Decimal (fromString)
 import Data.Date as Date
 import Data.Enum (toEnum)
 import Data.Maybe (Maybe(..), fromJust)
 import Data.Newtype (class Newtype)
 import Data.PreciseDateTime (PreciseDateTime(..), adjust, diff, fromRFC3339String, toRFC3339String)
 import Data.RFC3339String (RFC3339String(..))
-import Data.Time.PreciseDuration (PreciseDuration)
 import Data.Time.PreciseDuration as PD
 import Partial.Unsafe (unsafePartial)
 import Test.Spec (Spec, describe, it)
@@ -34,7 +33,7 @@ derive instance eqSecondsAndNanos :: Eq SecondsAndNanos
 instance showSecondsAndNanos :: Show SecondsAndNanos where
   show (SecondsAndNanos { seconds, nanos }) = "{ seconds: " <> show seconds <> ", nanos: " <> show nanos <> " }"
 
-spec :: forall r. Spec r Unit
+spec :: Spec Unit
 spec =
   describe "PreciseDateTime" do
     it "fromRFC3339String" do

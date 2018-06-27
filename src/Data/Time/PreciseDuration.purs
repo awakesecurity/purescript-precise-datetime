@@ -141,15 +141,15 @@ toMinutes mins@(Minutes _) = mins
 toMinutes duration = Minutes $ (Decimal.truncated (unPreciseDuration duration)) / minute
 
 toHours :: PreciseDuration -> PreciseDuration
-toHours hours@(Hours _) = hours
+toHours h@(Hours _) = h
 toHours duration = Hours $ (Decimal.truncated (unPreciseDuration duration)) / hour
 
 toDays :: PreciseDuration -> PreciseDuration
-toDays days@(Days _) = days
+toDays d@(Days _) = d
 toDays duration = Days $ (Decimal.truncated (unPreciseDuration duration)) / day
 
 toWeeks :: PreciseDuration -> PreciseDuration
-toWeeks weeks@(Weeks _) = weeks
+toWeeks w@(Weeks _) = w
 toWeeks duration = Weeks $ (Decimal.truncated (unPreciseDuration duration)) / week
 
 toDecimalLossy :: PreciseDuration -> Decimal

@@ -8,7 +8,7 @@ import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
 import Test.Utils (mkDateTime)
 
-spec :: forall r. Spec r Unit
+spec :: Spec Unit
 spec =
   describe "RFC3339String" do
     it "fromDateTime" do

@@ -2,13 +2,13 @@ module Test.Data.Time.PreciseDuration.Spec where
 
 import Prelude
 
-import Control.Monad.Aff (Aff)
 import Data.Decimal (Decimal)
 import Data.Decimal as Decimal
 import Data.Maybe (fromJust)
 import Data.Time.PreciseDuration (PreciseDuration, day, hour, micro, milli, minute, nano, second, toDays, toHours, toMicroseconds, toMilliseconds, toMinutes, toNanoseconds, toSeconds, toWeeks, week)
 import Data.Time.PreciseDuration as PD
 import Data.Traversable (traverse_)
+import Effect.Aff (Aff)
 import Partial.Unsafe (unsafePartial)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
@@ -17,12 +17,11 @@ unsafeFromString :: String -> Decimal
 unsafeFromString = unsafePartial fromJust <<< Decimal.fromString
 
 test
-  :: forall r
-   . (PreciseDuration -> PreciseDuration)
+  :: (PreciseDuration -> PreciseDuration)
   -> (Decimal -> PreciseDuration)
   -> Decimal
   -> Array Decimal
-  -> Aff r Unit
+  -> Aff Unit
 test fn ctr div = traverse_ \input -> do
   -- do not feed fractional values into nanoseconds
   when (Decimal.isInteger input) $
@@ -34,7 +33,7 @@ test fn ctr div = traverse_ \input -> do
   fn (PD.hours input) `shouldEqual` (ctr $ input * hour / div)
   fn (PD.weeks input) `shouldEqual` (ctr $ input * week / div)
 
-spec :: forall r. Spec r Unit
+spec :: Spec Unit
 spec =
   describe "PreciseDuration" do
     let inputs = [ unsafeFromString "123456789", unsafeFromString "0.5" ]
