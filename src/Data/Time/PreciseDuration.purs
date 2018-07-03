@@ -57,19 +57,16 @@ instance showPreciseDuration :: Show PreciseDuration where
   show (Days d) = "(Days " <> show d <> ")"
   show (Weeks d) = "(Weeks " <> show d <> ")"
 
-toFixed :: Decimal -> String
-toFixed = Decimal.toFixed 9
-
 toString :: PreciseDuration -> String
 toString = case _ of
-  Nanoseconds d -> toFixed d <> "ns"
-  Microseconds d -> toFixed d <> "us"
-  Milliseconds d -> toFixed d <> "ms"
-  Seconds d -> toFixed d <> "s"
-  Minutes d -> toFixed d <> "m"
-  Hours d -> toFixed d <> "h"
-  Days d -> toFixed d <> "d"
-  Weeks d -> toFixed d <> "w"
+  Nanoseconds d -> Decimal.toString d <> "ns"
+  Microseconds d -> Decimal.toString d <> "us"
+  Milliseconds d -> Decimal.toString d <> "ms"
+  Seconds d -> Decimal.toString d <> "s"
+  Minutes d -> Decimal.toString d <> "m"
+  Hours d -> Decimal.toString d <> "h"
+  Days d -> Decimal.toString d <> "d"
+  Weeks d -> Decimal.toString d <> "w"
 
 negatePreciseDuration :: PreciseDuration -> PreciseDuration
 negatePreciseDuration = case _ of
