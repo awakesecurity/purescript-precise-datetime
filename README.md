@@ -20,4 +20,4 @@ console.log(date.toISOString()); // 1985-03-13T20:34:56.123Z
 
 ## Dependencies
 
-Since this package depends on [purescript-bigints](https://pursuit.purescript.org/packages/purescript-bigints), it also requires installing `big-integer` from npm when targeting JavaScript.
+Since this package depends on [purescript-decimals](https://pursuit.purescript.org/packages/purescript-decimals), it also requires installing `decimal.js` from npm when targeting JavaScript.
