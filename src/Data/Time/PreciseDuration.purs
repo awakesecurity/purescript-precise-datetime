@@ -28,6 +28,7 @@ import Prelude
 
 import Data.Decimal (Decimal)
 import Data.Decimal as Decimal
+import Data.PreciseDateTime.Internal (dropWhileEnd)
 
 data PreciseDuration
   = Nanoseconds Decimal
@@ -59,14 +60,22 @@ instance showPreciseDuration :: Show PreciseDuration where
 
 toString :: PreciseDuration -> String
 toString = case _ of
-  Nanoseconds d -> Decimal.toString d <> "ns"
-  Microseconds d -> Decimal.toString d <> "us"
-  Milliseconds d -> Decimal.toString d <> "ms"
-  Seconds d -> Decimal.toString d <> "s"
-  Minutes d -> Decimal.toString d <> "m"
-  Hours d -> Decimal.toString d <> "h"
-  Days d -> Decimal.toString d <> "d"
-  Weeks d -> Decimal.toString d <> "w"
+  Nanoseconds d -> format d <> "ns"
+  Microseconds d -> format d <> "us"
+  Milliseconds d -> format d <> "ms"
+  Seconds d -> format d <> "s"
+  Minutes d -> format d <> "m"
+  Hours d -> format d <> "h"
+  Days d -> format d <> "d"
+  Weeks d -> format d <> "w"
+
+  where
+
+  format :: Decimal -> String
+  format = trim <<< Decimal.toFixed 20
+
+  trim :: String -> String
+  trim = dropWhileEnd (_ == '.') <<< dropWhileEnd (_ == '0')
 
 negatePreciseDuration :: PreciseDuration -> PreciseDuration
 negatePreciseDuration = case _ of
