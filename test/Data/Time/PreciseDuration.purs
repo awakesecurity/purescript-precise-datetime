@@ -46,3 +46,13 @@ spec =
     it "toHours" $ test toHours PD.hours hour inputs
     it "toDays" $ test toDays PD.days day inputs
     it "toWeeks" $ test toWeeks PD.weeks week inputs
+
+    it "toString" do
+      PD.toString (PD.nanoseconds 1) `shouldEqual` "1ns"
+      PD.toString (PD.microseconds $ Decimal.fromNumber 1.0) `shouldEqual` "1us"
+      PD.toString (PD.milliseconds $ Decimal.fromNumber 1.0) `shouldEqual` "1ms"
+      PD.toString (PD.seconds $ Decimal.fromNumber 1.0) `shouldEqual` "1s"
+      PD.toString (PD.minutes $ Decimal.fromNumber 1.0) `shouldEqual` "1m"
+      PD.toString (PD.hours $ Decimal.fromNumber 1.0) `shouldEqual` "1h"
+      PD.toString (PD.days $ Decimal.fromNumber 1.0) `shouldEqual` "1d"
+      PD.toString (PD.weeks $ Decimal.fromNumber 1.0) `shouldEqual` "1w"
