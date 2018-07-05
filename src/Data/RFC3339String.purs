@@ -3,15 +3,13 @@ module Data.RFC3339String where
 import Prelude
 
 import Data.DateTime (DateTime)
-import Data.Foldable (foldr)
 import Data.Formatter.DateTime (format)
 import Data.JSDate (JSDate)
 import Data.JSDate as JSDate
 import Data.Maybe (Maybe)
 import Data.Newtype (class Newtype, unwrap)
+import Data.PreciseDateTime.Internal (dropWhileEnd)
 import Data.RFC3339String.Format (iso8601Format)
-import Data.String.CodeUnits as String
-import Data.Tuple (Tuple(..), snd)
 import Effect.Unsafe (unsafePerformEffect)
 
 newtype RFC3339String = RFC3339String String
@@ -50,11 +48,3 @@ toDateTime = JSDate.toDateTime <<< unsafeParse <<< unwrap
   -- | for why this is "unsafe".
   unsafeParse :: String -> JSDate
   unsafeParse = unsafePerformEffect <<< JSDate.parse
-
--- | Returns the prefix remaining after dropping characters that satisfy the
--- | predicate from the end of the string.
-dropWhileEnd :: (Char -> Boolean) -> String -> String
-dropWhileEnd p s = snd $ foldr check (Tuple false "") (String.toCharArray s)
-  where
-    check c state@(Tuple false _) = if p c then state else Tuple true (String.singleton c)
-    check c state@(Tuple true string) = Tuple true (String.singleton c <> string)

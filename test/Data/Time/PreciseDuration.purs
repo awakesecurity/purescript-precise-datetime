@@ -46,3 +46,22 @@ spec =
     it "toHours" $ test toHours PD.hours hour inputs
     it "toDays" $ test toDays PD.days day inputs
     it "toWeeks" $ test toWeeks PD.weeks week inputs
+
+    it "toString" do
+      PD.toString (PD.nanoseconds 1) `shouldEqual` "1ns"
+      PD.toString (PD.microseconds $ Decimal.fromNumber 1.0) `shouldEqual` "1us"
+      PD.toString (PD.milliseconds $ Decimal.fromNumber 1.0) `shouldEqual` "1ms"
+      PD.toString (PD.seconds $ Decimal.fromNumber 1.0) `shouldEqual` "1s"
+      PD.toString (PD.minutes $ Decimal.fromNumber 1.0) `shouldEqual` "1m"
+      PD.toString (PD.hours $ Decimal.fromNumber 1.0) `shouldEqual` "1h"
+      PD.toString (PD.days $ Decimal.fromNumber 1.0) `shouldEqual` "1d"
+      PD.toString (PD.weeks $ Decimal.fromNumber 1.0) `shouldEqual` "1w"
+
+      -- Test that exponential notation is not used
+      PD.toString (PD.toMicroseconds $ PD.nanoseconds 1) `shouldEqual` "0.001us"
+      PD.toString (PD.toMilliseconds $ PD.nanoseconds 1) `shouldEqual` "0.000001ms"
+      PD.toString (PD.toSeconds $ PD.nanoseconds 1) `shouldEqual` "0.000000001s"
+      PD.toString (PD.toMinutes $ PD.nanoseconds 1) `shouldEqual` "0.00000000001666666667m"
+      PD.toString (PD.toHours $ PD.nanoseconds 1) `shouldEqual` "0.00000000000027777778h"
+      PD.toString (PD.toDays $ PD.nanoseconds 1) `shouldEqual`  "0.00000000000001157407d"
+      PD.toString (PD.toWeeks $ PD.nanoseconds 1) `shouldEqual` "0.00000000000000165344w"
