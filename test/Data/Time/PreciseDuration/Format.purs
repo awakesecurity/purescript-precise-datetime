@@ -11,9 +11,12 @@ import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
 
 test :: PreciseDuration -> String -> Spec Unit
-test dur expected =
+test dur expected = do
   it ("should format " <> expected) do
     formatPreciseDuration dur `shouldEqual` expected
+
+  when (dur /= PD.nanoseconds zero) $ it ("should format -" <> expected) do
+    formatPreciseDuration (PD.negatePreciseDuration dur) `shouldEqual` ("-" <> expected)
 
 two :: Decimal
 two = Decimal.fromNumber 2.0
@@ -23,6 +26,7 @@ spec = describe "Data.Time.PreciseDuration.Format" do
   describe "formatPreciseDuration" do
     describe "zero" do
       test (PD.nanoseconds zero) "0s"
+      test (PD.nanoseconds $ -zero) "0s"
 
     describe "nanoseconds" do
       test (PD.unsafeNanoseconds nano) "0.000000001s"

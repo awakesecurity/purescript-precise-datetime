@@ -15,9 +15,13 @@ formatPreciseDuration = PD.toNanoseconds >>> PD.toDecimalLossy >>> go
   where
 
   go :: Decimal -> String
-  go ns = Array.intercalate " " $ Array.catMaybes components
+  go ns' = sign <> (Array.intercalate " " $ Array.catMaybes components)
 
     where
+
+    negative = ns' < zero
+    ns = if negative then -ns' else ns'
+    sign = if negative then "-" else ""
 
     rDays = ns `modulo` PD.week
     weeks = ns - rDays
