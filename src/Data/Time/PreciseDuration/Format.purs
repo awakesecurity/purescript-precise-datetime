@@ -9,8 +9,15 @@ import Data.Monoid (guard)
 import Data.Time.PreciseDuration (PreciseDuration)
 import Data.Time.PreciseDuration as PD
 
+type Format =
+  { intermediateZeroes :: Boolean
+  }
+
 formatPreciseDuration :: PreciseDuration -> String
-formatPreciseDuration = PD.toNanoseconds >>> PD.toDecimalLossy >>> go
+formatPreciseDuration = formatPreciseDuration' { intermediateZeroes: true }
+
+formatPreciseDuration' :: Format -> PreciseDuration -> String
+formatPreciseDuration' format = PD.toNanoseconds >>> PD.toDecimalLossy >>> go
 
   where
 
@@ -37,22 +44,36 @@ formatPreciseDuration = PD.toNanoseconds >>> PD.toDecimalLossy >>> go
 
     secs = rSecs
 
+    gteWeek = ns >= PD.week
+    gteDay = ns >= PD.day
+    gteHour = ns >= PD.hour
+    gteMin = ns >= PD.minute
+
+    ltWeek = ns < PD.week
+    ltDay = ns < PD.day
+    ltHour = ns < PD.hour
+    ltMin = ns < PD.minute
+
+    zDaysXHours = days == zero && hours > zero
+    zHoursXMins = hours == zero && mins > zero
+    zMinsXSecs = mins == zero && secs > zero
+
     components :: Array (Maybe String)
     components =
       [ guard
-          (ns >= PD.week)
+          gteWeek
           (Just $ nsToString PD.toWeeks weeks)
       , guard
-          (ns >= PD.day && ns < PD.week || ns >= PD.week && rDays /= zero)
+          (gteDay && ltWeek || gteWeek && (days > zero || format.intermediateZeroes && (zDaysXHours || zHoursXMins || zMinsXSecs)))
           (Just $ nsToString PD.toDays days)
       , guard
-          (ns >= PD.hour && ns < PD.day || ns >= PD.day && rHours /= zero)
+          (gteHour && ltDay || gteDay && (hours > zero || format.intermediateZeroes && (zHoursXMins || zMinsXSecs)))
           (Just $ nsToString PD.toHours hours)
       , guard
-          (ns >= PD.minute && ns < PD.hour || ns >= PD.hour && rMins /= zero)
+          (gteMin && ltHour || gteHour && (mins > zero || format.intermediateZeroes && zMinsXSecs))
           (Just $ nsToString PD.toMinutes mins)
       , guard
-          (ns < PD.minute || ns >= PD.minute && rSecs /= zero)
+          (ltMin || gteMin && rSecs > zero)
           (Just $ nsToString PD.toSeconds secs)
       ]
 
