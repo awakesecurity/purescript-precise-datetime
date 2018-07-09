@@ -9,6 +9,18 @@ import Data.Monoid (guard)
 import Data.Time.PreciseDuration (PreciseDuration)
 import Data.Time.PreciseDuration as PD
 
+-- | When `intermediateZeroes` is set to `true`, zero-value components that
+-- | appear in the middle of the duration will be shown.
+-- |
+-- | For example:
+-- |
+-- | ```purescript
+-- | -- "1h 0m 1s"
+-- | formatPreciseDuration { intermediateZeroes: true }
+-- |
+-- | -- "1h 1s"
+-- | formatPreciseDuration { intermediateZeroes: false }
+-- | ```
 type Format =
   { intermediateZeroes :: Boolean
   }
