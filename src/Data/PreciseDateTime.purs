@@ -162,18 +162,15 @@ adjust pd (PreciseDateTime dt ns) = do
          then tenPowSix - adjustedNsInt
          else adjustedNsInt
 
-  adjustedNs <- toInt inverted >>= toEnum
+  adjustedNs <- toEnum $ decimalToInt inverted
   pure (PreciseDateTime adjustedDateTime adjustedNs)
 
-  where
-    zero = Decimal.fromInt 0
-    ten = Decimal.fromInt 10
-    tenPowSix = ten `pow` Decimal.fromInt 6
-    maxNano = tenPowSix - Decimal.fromInt 1
+tenPowSix = (Decimal.fromInt 10 `pow` Decimal.fromInt 6) :: Decimal
+maxNano = (tenPowSix - one) :: Decimal
 
-    -- | Coerce a `Data.Decimal` to an Int, preserving precision.
-    toInt :: Decimal -> Maybe Int
-    toInt = Int.fromString <<< Decimal.toString
+-- | Coerce a `Data.Decimal` to an Int, truncating it if it is out of range
+decimalToInt :: Decimal -> Int
+decimalToInt = Int.floor <<< Decimal.toNumber <<< Decimal.truncated
 
 
 diff :: PreciseDateTime -> PreciseDateTime -> PreciseDuration
