@@ -29,7 +29,7 @@
     "purescript-tuples": "^6.0.0",
     "purescript-unicode": "^5.0.0",
     "purescript-numbers": "^8.0.0",
-    "purescript-decimals": "^5.0.0"
+    "purescript-decimals": "thomashoneyman/purescript-decimals#master"
   },
   "devDependencies": {
     "purescript-psci-support": "^5.0.0",
