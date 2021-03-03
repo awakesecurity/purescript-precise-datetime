@@ -12,7 +12,7 @@ import Prelude
 
 import Control.Alt ((<|>))
 import Data.Array ((!!))
-import Data.Char.Unicode (isDigit)
+import Data.CodePoint.Unicode (isDecDigit)
 import Data.DateTime (DateTime, millisecond, time)
 import Data.DateTime as DateTime
 import Data.Decimal (Decimal, pow, truncated)
@@ -27,7 +27,7 @@ import Data.PreciseDate.Component (Nanosecond(..))
 import Data.PreciseDateTime.Internal (dateTimeFormatISO)
 import Data.RFC3339String (RFC3339String(..), trim)
 import Data.RFC3339String as RFC3339String
-import Data.String (Pattern(..), split)
+import Data.String (Pattern(..), codePointFromChar, split)
 import Data.String.CodeUnits (drop, length, take, takeWhile)
 import Data.Time.Duration as Duration
 import Data.Time.PreciseDuration (PreciseDuration, toDecimalLossy, toMilliseconds, toNanoseconds)
@@ -83,7 +83,7 @@ parseSubseconds :: RFC3339String -> Maybe String
 parseSubseconds (RFC3339String s) = do
   let parts = split (Pattern ".") s
   afterDot <- parts !! 1
-  let digits = takeWhile isDigit afterDot
+  let digits = takeWhile (isDecDigit <<< codePointFromChar) afterDot
   pure $ rightPadSubsecondString $ take 9 digits
 
 -- | Convert to `Nanosecond` separately so that a failure to parse subseconds
