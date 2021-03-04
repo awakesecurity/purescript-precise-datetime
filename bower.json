@@ -3,7 +3,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git://github.com/awakesecurity/purescript-precise-datetime.git"
+    "url": "https://github.com/awakesecurity/purescript-precise-datetime.git"
   },
   "ignore": [
     "**/.*",
@@ -12,28 +12,28 @@
     "output"
   ],
   "dependencies": {
-    "purescript-arrays": "^5.0.0",
-    "purescript-console": "^4.1.0",
-    "purescript-datetime": "^4.0.0",
-    "purescript-either": "^4.0.0",
-    "purescript-enums": "^4.0.0",
-    "purescript-foldable-traversable": "^4.0.0",
-    "purescript-formatters": "^4.0.0",
-    "purescript-integers": "^4.0.0",
-    "purescript-js-date": "^6.0.0",
-    "purescript-lists": "^5.0.0",
-    "purescript-maybe": "^4.0.0",
-    "purescript-newtype": "^3.0.0",
-    "purescript-prelude": "^4.0.1",
-    "purescript-strings": "^4.0.0",
-    "purescript-tuples": "^5.0.0",
-    "purescript-unicode": "^4.0.0",
-    "purescript-numbers": "^6.0.0",
-    "purescript-decimals": "^4.0.0"
+    "purescript-arrays": "^6.0.0",
+    "purescript-console": "^5.0.0",
+    "purescript-datetime": "^5.0.0",
+    "purescript-either": "^5.0.0",
+    "purescript-enums": "^5.0.0",
+    "purescript-foldable-traversable": "^5.0.0",
+    "purescript-formatters": "^5.0.0",
+    "purescript-integers": "^5.0.0",
+    "purescript-js-date": "^7.0.0",
+    "purescript-lists": "^6.0.0",
+    "purescript-maybe": "^5.0.0",
+    "purescript-newtype": "^4.0.0",
+    "purescript-prelude": "^5.0.0",
+    "purescript-strings": "^5.0.0",
+    "purescript-tuples": "^6.0.0",
+    "purescript-unicode": "^5.0.0",
+    "purescript-numbers": "^8.0.0",
+    "purescript-decimals": "^6.0.0"
   },
   "devDependencies": {
-    "purescript-psci-support": "^4.0.0",
-    "purescript-spec": "^3.0.0",
-    "purescript-spec-discovery": "owickstrom/purescript-spec-discovery#06d37dbdb2f456a95b68543cc8a0371dbebf87b5"
+    "purescript-psci-support": "^5.0.0",
+    "purescript-spec": "^5.0.0",
+    "purescript-spec-discovery": "^6.0.0"
   }
 }
