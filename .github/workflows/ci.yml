@@ -44,11 +44,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install -g yarn
-          yarn global add purescript@^0.14 pulp bower purescript-psa
-          export PATH="$PATH:`yarn global bin`"
-          bower install
-          yarn install
+          npm install purescript@^0.14 pulp bower purescript-psa
+          npx bower install
+          npm install
 
       - name: Run tests
-        run: pulp test
+        run: npx pulp test
