@@ -64,17 +64,8 @@ padSubsecondString = padString subsecondStringPadding
 leftPadMilliString :: String -> String
 leftPadMilliString = padMilliString (flip append)
 
-rightPadMilliString :: String -> String
-rightPadMilliString = padMilliString append
-
 leftPadNanoString :: String -> String
 leftPadNanoString = padNanoString (flip append)
-
-rightPadNanoString :: String -> String
-rightPadNanoString = padNanoString append
-
-leftPadSubsecondString :: String -> String
-leftPadSubsecondString = padSubsecondString (flip append)
 
 rightPadSubsecondString :: String -> String
 rightPadSubsecondString = padSubsecondString append
