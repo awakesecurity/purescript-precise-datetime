@@ -106,7 +106,7 @@ toRFC3339String (PreciseDateTime dateTime ns) =
 
 -- | Adjusts a date/time value with a duration offset. `Nothing` is returned
 -- | if the resulting date would be outside of the range of valid dates.
-adjust :: PD.PreciseDuration -> PreciseDateTime -> Maybe PreciseDateTime
+adjust :: PreciseDuration -> PreciseDateTime -> Maybe PreciseDateTime
 adjust pd (PreciseDateTime dt (Nanosecond ns)) = do
   let
     nanosDur = PD.toDecimalLossy (PD.toNanoseconds pd)
