@@ -15,7 +15,7 @@ import Data.Array ((!!))
 import Data.CodePoint.Unicode (isDecDigit)
 import Data.DateTime (DateTime, millisecond, time)
 import Data.DateTime as DateTime
-import Data.Decimal (Decimal, pow, truncated)
+import Data.Decimal (Decimal)
 import Data.Decimal as Decimal
 import Data.Enum (fromEnum, toEnum)
 import Data.Formatter.DateTime (format)
@@ -29,8 +29,9 @@ import Data.RFC3339String (RFC3339String(..), trim)
 import Data.RFC3339String as RFC3339String
 import Data.String (Pattern(..), codePointFromChar, split)
 import Data.String.CodeUnits (drop, length, take, takeWhile)
+import Data.Time.Duration (Milliseconds(..))
 import Data.Time.Duration as Duration
-import Data.Time.PreciseDuration (PreciseDuration, toDecimalLossy, toMilliseconds, toNanoseconds)
+import Data.Time.PreciseDuration (PreciseDuration)
 import Data.Time.PreciseDuration as PD
 
 data PreciseDateTime = PreciseDateTime DateTime Nanosecond
@@ -106,63 +107,27 @@ toRFC3339String (PreciseDateTime dateTime ns) =
 -- | Adjusts a date/time value with a duration offset. `Nothing` is returned
 -- | if the resulting date would be outside of the range of valid dates.
 adjust :: PreciseDuration -> PreciseDateTime -> Maybe PreciseDateTime
-adjust pd (PreciseDateTime dt ns) = do
+adjust pd (PreciseDateTime dt (Nanosecond ns)) = do
   let
-    nsPrecDur = toNanoseconds pd
-    nsPrecDurInt = toDecimalLossy nsPrecDur
-    msPrecDur = toMilliseconds nsPrecDur
-    -- Truncate milliseconds to remove fractional nanoseconds.
-    msPrecDurDec = truncated $ toDecimalLossy msPrecDur
-    roundTripDurInt = toDecimalLossy <<< toNanoseconds $ PD.milliseconds msPrecDurDec
+    nanosDur = PD.toDecimalLossy (PD.toNanoseconds pd)
+    millisPart = Decimal.truncated $ PD.toDecimalLossy $ PD.toMilliseconds pd
+    nanosPart = Int.floor $ Decimal.toNumber $ nanosDur - (Decimal.fromInt 1_000_000 * millisPart)
+    millisNum = Decimal.toNumber millisPart
+    nanosAdj = ns + nanosPart
+    { millis, nanos } =
+      if nanosAdj >= 1_000_000 then
+        { millis: millisNum + 1.0, nanos: nanosAdj - 1_000_000 }
+      else if nanosAdj < 0 then do
+        { millis: millisNum - 1.0, nanos: nanosAdj + 1_000_000 }
+      else
+        { millis: millisNum, nanos: nanosAdj }
 
-    negative = nsPrecDurInt < zero
-    nsDiff = nsPrecDurInt - roundTripDurInt
-
-    -- If the duration is negative and the conversion from nanoseconds to
-    -- milliseconds and back is not lossless then we need to round up the lost
-    -- nanoseconds to 1 millisecond and adjust the duration.
-    adjustment =
-      if negative && nsDiff < zero
-         then 1
-         else 0
-
-    adjustedMsPrecDurInt = msPrecDurDec - Decimal.fromInt adjustment
-
-    msDur :: Duration.Milliseconds
-    msDur = Duration.Milliseconds <<< Decimal.toNumber $ adjustedMsPrecDurInt
-
-  adjustedDateTime <- DateTime.adjust msDur dt
-
-  -- If the duration is larger than can be represented in a `Nanosecond`
-  -- component, take the last 6 digits.
-  let
-    unsigned = Decimal.abs nsPrecDurInt
-    nsString = Decimal.toString unsigned
-
-    lastSix =
-      if unsigned > maxNano
-        then drop (length nsString - 6) nsString
-        else nsString
-
-  adjustedNsPrecDurInt <- Decimal.fromString lastSix
-  let adjustedNsInt = Decimal.fromInt (unwrap ns) + adjustedNsPrecDurInt
-
-  let
-    inverted =
-      if negative && adjustedNsInt <= maxNano && adjustedNsPrecDurInt /= zero
-         then tenPowSix - adjustedNsInt
-         else adjustedNsInt
-
-  adjustedNs <- toEnum $ decimalToInt inverted
-  pure (PreciseDateTime adjustedDateTime adjustedNs)
-
-tenPowSix = (Decimal.fromInt 10 `pow` Decimal.fromInt 6) :: Decimal
-maxNano = (tenPowSix - one) :: Decimal
+  flip PreciseDateTime (Nanosecond nanos)
+    <$> DateTime.adjust (Milliseconds millis) dt
 
 -- | Coerce a `Data.Decimal` to an Int, truncating it if it is out of range
 decimalToInt :: Decimal -> Int
 decimalToInt = Int.floor <<< Decimal.toNumber <<< Decimal.truncated
-
 
 diff :: PreciseDateTime -> PreciseDateTime -> PreciseDuration
 diff (PreciseDateTime dt0 (Nanosecond ns0)) (PreciseDateTime dt1 (Nanosecond ns1)) =
