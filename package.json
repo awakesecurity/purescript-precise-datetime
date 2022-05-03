@@ -1,6 +1,7 @@
 {
   "devDependencies": {
     "big-integer": "^1.6.51",
-    "decimal.js": "^10.3.1"
+    "decimal.js": "^10.3.1",
+    "purs-tidy": "^0.8.0"
   }
 }

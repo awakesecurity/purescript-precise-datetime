@@ -2,7 +2,14 @@ module Data.Time.PreciseDuration
   ( PreciseDuration
   , toString
   , negatePreciseDuration
-  , nanoseconds, microseconds, milliseconds, seconds, minutes, hours, days, weeks
+  , nanoseconds
+  , microseconds
+  , milliseconds
+  , seconds
+  , minutes
+  , hours
+  , days
+  , weeks
   , unsafeNanoseconds
   , unPreciseDuration
   , toNanoseconds
@@ -79,14 +86,14 @@ toString = case _ of
 
 negatePreciseDuration :: PreciseDuration -> PreciseDuration
 negatePreciseDuration = case _ of
-  Nanoseconds   x -> Nanoseconds   (negate x)
-  Microseconds  x -> Microseconds  (negate x)
-  Milliseconds  x -> Milliseconds  (negate x)
-  Seconds       x -> Seconds       (negate x)
-  Minutes       x -> Minutes       (negate x)
-  Hours         x -> Hours         (negate x)
-  Days          x -> Days          (negate x)
-  Weeks         x -> Weeks         (negate x)
+  Nanoseconds x -> Nanoseconds (negate x)
+  Microseconds x -> Microseconds (negate x)
+  Milliseconds x -> Milliseconds (negate x)
+  Seconds x -> Seconds (negate x)
+  Minutes x -> Minutes (negate x)
+  Hours x -> Hours (negate x)
+  Days x -> Days (negate x)
+  Weeks x -> Weeks (negate x)
 
 -- Smart constructors
 unsafeNanoseconds :: Decimal -> PreciseDuration
@@ -119,14 +126,14 @@ weeks = Weeks
 
 unPreciseDuration :: PreciseDuration -> Decimal
 unPreciseDuration = case _ of
-  Nanoseconds d  -> d
+  Nanoseconds d -> d
   Microseconds d -> d * micro
   Milliseconds d -> d * milli
-  Seconds d      -> d * second
-  Minutes d      -> d * minute
-  Hours d        -> d * hour
-  Days d         -> d * day
-  Weeks d        -> d * week
+  Seconds d -> d * second
+  Minutes d -> d * minute
+  Hours d -> d * hour
+  Days d -> d * day
+  Weeks d -> d * week
 
 -- Conversions
 toNanoseconds :: PreciseDuration -> PreciseDuration
@@ -173,11 +180,11 @@ toDecimalLossy = case _ of
   Weeks d -> d
 
 -- Each duration in nanoseconds
-nano   = Decimal.fromInt 1 :: Decimal
-micro  = (nano * Decimal.fromInt 1000) :: Decimal
-milli  = (micro * Decimal.fromInt 1000) :: Decimal
+nano = Decimal.fromInt 1 :: Decimal
+micro = (nano * Decimal.fromInt 1000) :: Decimal
+milli = (micro * Decimal.fromInt 1000) :: Decimal
 second = (milli * Decimal.fromInt 1000) :: Decimal
 minute = (second * Decimal.fromInt 60) :: Decimal
-hour   = (minute * Decimal.fromInt 60) :: Decimal
-day    = (hour * Decimal.fromInt 24) :: Decimal
-week   = (day * Decimal.fromInt 7) :: Decimal
+hour = (minute * Decimal.fromInt 60) :: Decimal
+day = (hour * Decimal.fromInt 24) :: Decimal
+week = (day * Decimal.fromInt 7) :: Decimal

@@ -2,8 +2,8 @@ module Test.Data.PreciseDateTime.Spec where
 
 import Prelude
 
-import Data.Decimal (fromString)
 import Data.Date as Date
+import Data.Decimal (fromString)
 import Data.Enum (toEnum)
 import Data.Maybe (Maybe(..), fromJust)
 import Data.Newtype (class Newtype)
@@ -74,7 +74,7 @@ spec =
       fromRFC3339String (RFC3339String $ dateStringFixture <> ".1000000000Z")
         `shouldEqual` (Just $ preciseDateTimeFixture 100 0)
 
-    it"toRFC3339String" do
+    it "toRFC3339String" do
       toRFC3339String (preciseDateTimeFixture 0 0)
         `shouldEqual` (RFC3339String $ dateStringFixture <> ".0Z")
 
@@ -133,7 +133,6 @@ spec =
       diff (mkPreciseDateTime 1985 Date.March 5 23 59 59 999 999999) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (PD.unsafeNanoseconds <<< unsafePartial fromJust <<< fromString $ "-604800000000001")
 
-
     it "adjust" do
       adjust (PD.nanoseconds 0) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
@@ -147,7 +146,7 @@ spec =
       adjust (PD.nanoseconds 1000000) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 13 0 0 0 1 0)
 
-      adjust(PD.nanoseconds (-1000000)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
+      adjust (PD.nanoseconds (-1000000)) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)
         `shouldEqual` (Just $ mkPreciseDateTime 1985 Date.March 12 23 59 59 999 0)
 
       adjust (PD.nanoseconds 10000000) (mkPreciseDateTime 1985 Date.March 13 0 0 0 0 0)

@@ -11,4 +11,4 @@ import Test.Spec.Runner (runSpec)
 main :: Effect Unit
 main = launchAff_ do
   spec <- discover "Test\\..*\\.Spec"
-  runSpec [consoleReporter] spec
+  runSpec [ consoleReporter ] spec

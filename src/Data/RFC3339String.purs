@@ -29,9 +29,8 @@ trim (RFC3339String s) =
     withoutTrailingZeros = dropWhileEnd (eq '0') withoutZulu
     withoutTrailingDot = dropWhileEnd (eq '.') withoutTrailingZeros
   in
-    if withoutTrailingZeros == withoutTrailingDot
-    then RFC3339String $ withoutTrailingDot <> "Z"
-         -- always have a subseconds component
+    if withoutTrailingZeros == withoutTrailingDot then RFC3339String $ withoutTrailingDot <> "Z"
+    -- always have a subseconds component
     else RFC3339String $ withoutTrailingDot <> ".0Z"
 
 -- | Use our own formatter since we'd otherwise need to convert from `DateTime`
