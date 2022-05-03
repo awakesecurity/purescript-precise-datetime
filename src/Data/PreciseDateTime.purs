@@ -15,7 +15,6 @@ import Data.Array ((!!))
 import Data.CodePoint.Unicode (isDecDigit)
 import Data.DateTime (DateTime, millisecond, time)
 import Data.DateTime as DateTime
-import Data.Decimal (Decimal)
 import Data.Decimal as Decimal
 import Data.Enum (fromEnum, toEnum)
 import Data.Formatter.DateTime (format)
@@ -125,14 +124,11 @@ adjust pd (PreciseDateTime dt (Nanosecond ns)) = do
   flip PreciseDateTime (Nanosecond nanos)
     <$> DateTime.adjust (Milliseconds millis) dt
 
--- | Coerce a `Data.Decimal` to an Int, truncating it if it is out of range
-decimalToInt :: Decimal -> Int
-decimalToInt = Int.floor <<< Decimal.toNumber <<< Decimal.truncated
-
 diff :: PreciseDateTime -> PreciseDateTime -> PreciseDuration
 diff (PreciseDateTime dt0 (Nanosecond ns0)) (PreciseDateTime dt1 (Nanosecond ns1)) =
-  let Duration.Milliseconds msNum = DateTime.diff dt0 dt1
-      nsNum = Int.toNumber (ns0 - ns1) + msNum * 1000000.0
+  let
+    Duration.Milliseconds msNum = DateTime.diff dt0 dt1
+    nsNum = Int.toNumber (ns0 - ns1) + msNum * 1000000.0
   in
     PD.unsafeNanoseconds (Decimal.fromNumber nsNum)
 

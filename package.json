@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "big-integer": "^1.6.26",
-    "decimal.js": "^9.0.1"
+    "big-integer": "^1.6.51",
+    "decimal.js": "^10.3.1"
   }
 }
