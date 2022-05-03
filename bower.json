@@ -12,28 +12,29 @@
     "output"
   ],
   "dependencies": {
-    "purescript-arrays": "^6.0.0",
-    "purescript-console": "^5.0.0",
-    "purescript-datetime": "^5.0.0",
-    "purescript-either": "^5.0.0",
-    "purescript-enums": "^5.0.0",
-    "purescript-foldable-traversable": "^5.0.0",
-    "purescript-formatters": "^5.0.0",
-    "purescript-integers": "^5.0.0",
-    "purescript-js-date": "^7.0.0",
-    "purescript-lists": "^6.0.0",
-    "purescript-maybe": "^5.0.0",
-    "purescript-newtype": "^4.0.0",
-    "purescript-prelude": "^5.0.0",
-    "purescript-strings": "^5.0.0",
-    "purescript-tuples": "^6.0.0",
-    "purescript-unicode": "^5.0.0",
-    "purescript-numbers": "^8.0.0",
-    "purescript-decimals": "^6.0.0"
+    "purescript-arrays": "^7.0.0",
+    "purescript-console": "^6.0.0",
+    "purescript-datetime": "^6.0.0",
+    "purescript-either": "^6.0.0",
+    "purescript-enums": "^6.0.0",
+    "purescript-foldable-traversable": "^6.0.0",
+    "purescript-formatters": "^7.0.0",
+    "purescript-integers": "^6.0.0",
+    "purescript-js-date": "^8.0.0",
+    "purescript-lists": "^7.0.0",
+    "purescript-maybe": "^6.0.0",
+    "purescript-newtype": "^5.0.0",
+    "purescript-prelude": "^6.0.0",
+    "purescript-strings": "^6.0.0",
+    "purescript-tuples": "^7.0.0",
+    "purescript-unicode": "^6.0.0",
+    "purescript-numbers": "^9.0.0",
+    "purescript-decimals": "^7.0.0",
+    "purescript-aff-promise": "^4.0.0"
   },
   "devDependencies": {
-    "purescript-psci-support": "^5.0.0",
-    "purescript-spec": "^5.0.0",
-    "purescript-spec-discovery": "^6.0.0"
+    "purescript-psci-support": "^6.0.0",
+    "purescript-spec": "^7.0.0",
+    "purescript-spec-discovery": "^8.0.0"
   }
 }

@@ -63,5 +63,5 @@ spec =
       PD.toString (PD.toSeconds $ PD.nanoseconds 1) `shouldEqual` "0.000000001s"
       PD.toString (PD.toMinutes $ PD.nanoseconds 1) `shouldEqual` "0.00000000001666666667m"
       PD.toString (PD.toHours $ PD.nanoseconds 1) `shouldEqual` "0.00000000000027777778h"
-      PD.toString (PD.toDays $ PD.nanoseconds 1) `shouldEqual`  "0.00000000000001157407d"
+      PD.toString (PD.toDays $ PD.nanoseconds 1) `shouldEqual` "0.00000000000001157407d"
       PD.toString (PD.toWeeks $ PD.nanoseconds 1) `shouldEqual` "0.00000000000000165344w"

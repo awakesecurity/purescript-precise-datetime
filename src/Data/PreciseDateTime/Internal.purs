@@ -34,5 +34,5 @@ dateTimeFormatISO = dateFormat <> pure (Placeholder "T") <> timeFormat
 dropWhileEnd :: (Char -> Boolean) -> String -> String
 dropWhileEnd p s = snd $ Array.foldr check (Tuple false "") (String.toCharArray s)
   where
-    check c state@(Tuple false _) = if p c then state else Tuple true (String.singleton c)
-    check c (Tuple true string) = Tuple true (String.singleton c <> string)
+  check c state@(Tuple false _) = if p c then state else Tuple true (String.singleton c)
+  check c (Tuple true string) = Tuple true (String.singleton c <> string)
