@@ -14,9 +14,9 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Set up Node toolchain
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: "12.x"
+          node-version: "14.x"
 
       - name: Cache NPM dependencies
         uses: actions/cache@v2
@@ -45,7 +45,7 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
-          npm install purescript@^0.14 pulp bower purescript-psa
+          npm install purescript@^0.15 pulp bower purescript-psa
           npx bower install
 
       - name: Run tests
