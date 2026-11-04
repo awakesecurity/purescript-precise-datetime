@@ -16,7 +16,7 @@ jobs:
       - name: Set up Node toolchain
         uses: actions/setup-node@v2
         with:
-          node-version: "14.x"
+          node-version: "22.x"
 
       - name: Cache NPM dependencies
         uses: actions/cache@v2
@@ -30,13 +30,13 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - name: Cache Bower dependencies
+      - name: Cache Spago dependencies
         uses: actions/cache@v2
         env:
-          cache-name: cache-bower-modules
+          cache-name: cache-spago
         with:
-          path: ~/bower_components
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/bower.json') }}
+          path: ~/.cache/spago-nodejs
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/spago.yaml') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
@@ -45,8 +45,7 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
-          npm install purescript@^0.15 pulp bower purescript-psa
-          npx bower install
+          npm install purescript@^0.15 spago@1.0.5 purescript-psa
 
       - name: Run tests
-        run: npx pulp test
+        run: npx spago test
