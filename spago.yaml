@@ -27,13 +27,8 @@ package:
     main: Test.Main
     dependencies:
       - aff: ">=7.0.0 <8.0.0"
-      - aff-promise: ">=4.0.0 <5.0.0"
-      - console: ">=6.0.0 <7.0.0"
-      - either: ">=6.0.0 <7.0.0"
       - foldable-traversable: ">=6.0.0 <7.0.0"
-      - numbers: ">=9.0.0 <10.0.0"
       - partial: ">=4.0.0 <5.0.0"
-      - psci-support: ">=6.0.0 <7.0.0"
       - spec: ">=7.0.0 <8.0.0"
       - spec-discovery: ">=8.0.0 <9.0.0"
 workspace: {}
